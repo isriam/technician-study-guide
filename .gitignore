@@ -1,0 +1,4 @@
+*.pdf
+pool-raw.txt
+__pycache__/
+*.pyc
