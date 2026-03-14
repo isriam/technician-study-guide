@@ -35,7 +35,7 @@ REPO_DIR = SCRIPT_DIR.parent
 PRONUNCIATION_FILE = SCRIPT_DIR / "pronunciation.md"
 DEFAULT_VOICE = "will"
 MAX_CHUNK_CHARS = 2000
-OPEN_SPEECH_URL = "https://192.0.2.24:8100/v1/audio/speech"
+OPEN_SPEECH_URL = os.environ.get("SPEECH_URL", "https://localhost:8100/v1/audio/speech")
 
 
 def load_pronunciation(path):

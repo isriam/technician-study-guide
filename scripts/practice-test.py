@@ -25,9 +25,9 @@ EXAM_DISTRIBUTION = {
 
 # Questions that reference schematic diagrams
 FIGURE_QUESTIONS = {
-    "T6C01": "T-1.png", "T6C02": "T-1.png", "T6C03": "T-1.png", "T6C04": "T-1.png",
-    "T6C05": "T-2.png", "T6C06": "T-2.png", "T6C07": "T-2.png", "T6C08": "T-2.png",
-    "T6C09": "T-3.png", "T6C10": "T-3.png", "T6C11": "T-3.png", "T6C12": "T-3.png",
+    "T6C02": "T-1.png", "T6C03": "T-1.png", "T6C04": "T-1.png", "T6C05": "T-1.png",
+    "T6C06": "T-2.png", "T6C07": "T-2.png", "T6C08": "T-2.png", "T6C09": "T-2.png",
+    "T6C10": "T-3.png", "T6C11": "T-3.png",
 }
 
 

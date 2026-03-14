@@ -1,5 +1,8 @@
 # Amateur Radio Technician Exam Study Guide
 
+> ⚠️ **This guide covers the 2022–2026 question pool** (valid through June 30, 2026).
+> If you're studying after that date, you need the 2026–2030 pool.
+
 Pass the FCC Technician class license exam. All questions, all answers, explained.
 
 ## What's Inside
@@ -69,6 +72,27 @@ python3 scripts/practice-test.py
 ```
 
 Generates a random 35-question exam from the real pool, scores it, and shows which areas need work.
+
+### Audio Study Guide 🎧
+
+Every section and the cram sheet are available as MP3 audio — study while driving, working out, or doing chores.
+
+| File | Duration |
+|------|----------|
+| `subelements/T1-fcc-rules.mp3` | 52 min |
+| `subelements/T2-operating-procedures.mp3` | 24 min |
+| `subelements/T3-radio-waves.mp3` | 24 min |
+| `subelements/T4-amateur-practices.mp3` | 17 min |
+| `subelements/T5-electrical-principles.mp3` | 29 min |
+| `subelements/T6-components.mp3` | 26 min |
+| `subelements/T7-practical-circuits.mp3` | 29 min |
+| `subelements/T8-signals-emissions.mp3` | 33 min |
+| `subelements/T9-antennas-feedlines.mp3` | 17 min |
+| `subelements/T0-safety.mp3` | 27 min |
+| `CRAM-SHEET.mp3` | 9 min |
+| **Total** | **4h 47m** |
+
+Each MP3 reads the full question, all answer choices, the correct answer, and the explanation. Pronunciation of ham radio acronyms follows standard conventions (see `tts/pronunciation.md`).
 
 ### Cram Sheet
 
