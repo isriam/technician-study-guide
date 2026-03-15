@@ -31,8 +31,8 @@ SWR|S W R
 AGC|A G C
 RIT|R I T
 LED|L E D
-AC|A C
-DC|D C
+AC|A.C.
+DC|D.C.
 IC|I C
 NPN|N P N
 PNP|P N P
