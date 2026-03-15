@@ -106,3 +106,5 @@ CAT IV|cat 4
 CAT III|cat 3
 CAT II|cat 2
 IEEE|I. triple E.
+coax|co-ax
+Coax|Co-ax
