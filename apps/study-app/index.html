@@ -107,7 +107,7 @@ body {
   transition: background var(--transition);
   flex-shrink: 0;
 }
-#theme-btn:hover { background: var(--border); }
+@media (hover: hover) { #theme-btn:hover { background: var(--border); } }
 
 /* ===== BOTTOM NAV ===== */
 #nav {
@@ -177,9 +177,9 @@ body {
 }
 .btn:active { transform: scale(0.97); }
 .btn-primary { background: var(--accent); color: white; }
-.btn-primary:hover { background: var(--accent2); }
+@media (hover: hover) { .btn-primary:hover { background: var(--accent2); } }
 .btn-secondary { background: var(--bg3); color: var(--text); }
-.btn-secondary:hover { background: var(--border); }
+@media (hover: hover) { .btn-secondary:hover { background: var(--border); } }
 .btn-green { background: var(--green); color: white; }
 .btn-red { background: var(--red); color: white; }
 .btn-full { width: 100%; }
@@ -244,7 +244,7 @@ body {
   transition: all var(--transition);
   -webkit-tap-highlight-color: transparent;
 }
-.quick-btn:hover { border-color: var(--accent); transform: translateY(-1px); box-shadow: var(--shadow); }
+@media (hover: hover) { .quick-btn:hover { border-color: var(--accent); transform: translateY(-1px); box-shadow: var(--shadow); } }
 .quick-btn:active { transform: scale(0.98); }
 .quick-btn-icon { font-size: 32px; width: 52px; height: 52px; background: var(--bg3); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .quick-btn-text { flex: 1; }
@@ -275,7 +275,7 @@ body {
   transition: all var(--transition);
   -webkit-tap-highlight-color: transparent;
 }
-.section-card:hover { border-color: var(--accent); }
+@media (hover: hover) { .section-card:hover { border-color: var(--accent); } }
 .section-card:active { transform: scale(0.98); }
 .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
 .section-title { font-size: 15px; font-weight: 700; color: var(--text); }
@@ -351,7 +351,7 @@ body {
 
 .fc-controls { display: flex; gap: 8px; align-items: center; }
 .fc-tts-btn { background: var(--bg3); border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; color: var(--text); transition: background var(--transition); flex-shrink: 0; }
-.fc-tts-btn:hover { background: var(--border); }
+@media (hover: hover) { .fc-tts-btn:hover { background: var(--border); } }
 .fc-tts-btn.speaking { color: var(--accent); }
 
 /* ===== SECTION SELECT ===== */
@@ -365,7 +365,8 @@ body {
   transition: all var(--transition);
   -webkit-tap-highlight-color: transparent;
 }
-.mode-option:hover, .mode-option.selected { border-color: var(--accent); background: rgba(233,69,96,0.05); }
+@media (hover: hover) { .mode-option:hover { border-color: var(--accent); background: rgba(233,69,96,0.05); } }
+.mode-option.selected { border-color: var(--accent); background: rgba(233,69,96,0.05); }
 .mode-option-title { font-size: 15px; font-weight: 700; }
 .mode-option-desc { font-size: 13px; color: var(--text2); margin-top: 3px; }
 
@@ -429,6 +430,13 @@ body {
 
 .test-nav { display: flex; gap: 12px; }
 .test-nav .btn { flex: 1; }
+
+.test-aux-actions { display: flex; gap: 8px; margin-top: 10px; }
+.btn-show-answer { background: transparent; color: var(--text2); border: 1px dashed var(--border); font-size: 13px; padding: 8px 12px; min-height: 36px; border-radius: var(--radius-sm); }
+@media (hover: hover) { .btn-show-answer:hover { border-color: var(--yellow); color: var(--yellow); } }
+.btn-end-exam { background: transparent; color: var(--red); border: 1px solid var(--red); font-size: 13px; padding: 8px 12px; min-height: 36px; border-radius: var(--radius-sm); opacity: 0.7; }
+@media (hover: hover) { .btn-end-exam:hover { opacity: 1; background: rgba(239,68,68,0.06); } }
+.btn-show-answer:disabled, .btn-end-exam:disabled { opacity: 0.3; cursor: default; }
 
 /* ===== SCORE / RESULTS ===== */
 .score-header { text-align: center; padding: 8px 0; }
@@ -759,6 +767,10 @@ body {
       <div class="test-nav">
         <button class="btn btn-secondary" id="test-prev-btn" onclick="testPrev()" disabled>← Prev</button>
         <button class="btn btn-primary" id="test-next-btn" onclick="testNext()">Next →</button>
+      </div>
+      <div class="test-aux-actions">
+        <button class="btn btn-show-answer" id="test-show-answer-btn" onclick="showTestAnswer()">👁 Show Answer</button>
+        <button class="btn btn-end-exam" onclick="endExamEarly()">⏹ End Exam Early</button>
       </div>
     </div>
 
@@ -1461,6 +1473,8 @@ function renderTestQuestion() {
   document.getElementById('test-prev-btn').disabled = testCurrentQ === 0;
   document.getElementById('test-next-btn').textContent =
     testCurrentQ === 34 ? 'Submit →' : 'Next →';
+  const showAnswerBtn = document.getElementById('test-show-answer-btn');
+  if (showAnswerBtn) showAnswerBtn.disabled = testRevealed[testCurrentQ] === true;
 
   // Show figure image if question references one
   const figureEl = document.getElementById('test-figure');
@@ -1497,6 +1511,30 @@ function selectAnswer(idx) {
   if (testRevealed[testCurrentQ]) return;
   testAnswers[testCurrentQ] = idx;
   renderTestQuestion();
+}
+
+function showTestAnswer() {
+  if (testRevealed[testCurrentQ] === true) return;
+  // Mark as peeked: reveal the answer, count as wrong
+  testRevealed[testCurrentQ] = true;
+  // Force wrong by setting selected to something that isn't correct
+  // (if they hadn't selected yet, -1 ensures it's wrong; if they had selected correctly, override to -1)
+  const q = testQuestions[testCurrentQ];
+  if (testAnswers[testCurrentQ] === q.correct) {
+    // They had the right one — peeking overrides it to wrong
+    testAnswers[testCurrentQ] = -1;
+  }
+  renderTestQuestion();
+}
+
+function endExamEarly() {
+  const answered = testAnswers.filter(a => a !== -1).length;
+  const correctSoFar = testQuestions.reduce((n, q, i) => n + (testAnswers[i] === q.correct ? 1 : 0), 0);
+  const msg = answered === 0
+    ? 'End exam now? All 35 questions will be marked wrong.'
+    : `End exam now?\n\n${answered} of 35 answered · ${correctSoFar} correct so far\nUnanswered questions count as wrong.`;
+  if (!confirm(msg)) return;
+  submitTest();
 }
 
 function testPrev() {
