@@ -845,9 +845,11 @@ body {
   </div>
 </div>
 
-<script src="questions.js"></script>
 <script>
 // ===== DATA & STATE =====
+
+// Populated asynchronously from ../../pools/2022-2026/questions.json
+let QUESTION_POOL = [];
 
 const SUBELEMENT_NAMES = {
   T1: 'T1 · FCC Rules & Regulations',
@@ -1629,12 +1631,62 @@ if ('serviceWorker' in navigator) {
   });
 }
 
+// ===== DATA LOADING =====
+
+/**
+ * Transform canonical pool format → app format:
+ *   answers: {A,B,C,D}  → array [A_val, B_val, C_val, D_val]
+ *   correct: letter      → index (A=0, B=1, C=2, D=3)
+ *   question: may start with [97.1] bracket → extract as refs, strip from text
+ */
+function transformQuestion(q) {
+  const answerKeys = ['A', 'B', 'C', 'D'];
+  const answers = answerKeys.map(k => q.answers[k]);
+  const correct = answerKeys.indexOf(q.correct);
+
+  // Extract bracketed refs like [97.1] or [97.3(a)(2)] from start of question
+  const refsMatch = q.question.match(/^\[([^\]]+)\]\s*/);
+  const refs = refsMatch ? refsMatch[1] : null;
+  const question = refsMatch ? q.question.slice(refsMatch[0].length) : q.question;
+
+  return { id: q.id, correct, refs, question, answers };
+}
+
+async function initApp() {
+  // Show a subtle loading message while fetching
+  const homeEl = document.getElementById('page-home');
+  const loadingEl = document.createElement('div');
+  loadingEl.id = 'loading-overlay';
+  loadingEl.style.cssText = 'position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--bg);z-index:999;font-size:18px;color:var(--text2);';
+  loadingEl.textContent = '📡 Loading question pool…';
+  document.body.appendChild(loadingEl);
+
+  try {
+    const resp = await fetch('../../pools/2022-2026/questions.json');
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data = await resp.json();
+    QUESTION_POOL = data.questions.map(transformQuestion);
+  } catch (err) {
+    loadingEl.innerHTML = `<div style="text-align:center;padding:24px;">
+      <div style="font-size:48px;margin-bottom:16px;">⚠️</div>
+      <div style="font-weight:700;margin-bottom:8px;">Failed to load question pool</div>
+      <div style="font-size:14px;color:var(--text2);margin-bottom:16px)">${err.message}</div>
+      <button onclick="location.reload()" style="padding:10px 20px;background:var(--accent);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:16px;">Retry</button>
+    </div>`;
+    return;
+  }
+
+  loadingEl.remove();
+
+  loadState();
+  applyTheme(state.theme || 'auto');
+  renderHome();
+  renderSections();
+}
+
 // ===== INIT =====
 
-loadState();
-applyTheme(state.theme || 'auto');
-renderHome();
-renderSections();
+initApp();
 </script>
 </body>
 </html>
