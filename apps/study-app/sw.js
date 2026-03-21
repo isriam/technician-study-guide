@@ -1,12 +1,15 @@
 // Ham Radio Study PWA - Service Worker
-const CACHE_NAME = 'hamradio-v2';
+const CACHE_NAME = 'hamradio-v3';
 const ASSETS = [
   './',
   './index.html',
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
-  '../../pools/2022-2026/questions.json'
+  '../../pools/2022-2026/questions.json',
+  '../../figures/T-1.png',
+  '../../figures/T-2.png',
+  '../../figures/T-3.png'
 ];
 
 self.addEventListener('install', event => {
