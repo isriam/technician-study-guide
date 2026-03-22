@@ -295,59 +295,49 @@ body {
 .fc-section-label { font-size: 12px; color: var(--accent); font-weight: 600; }
 .fc-progress { margin: 4px 0; }
 
-.flashcard-scene {
-  perspective: 1200px;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  min-height: 280px;
-  position: relative;
-}
-.flashcard-inner {
-  width: 100%;
-  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  transform-style: preserve-3d;
-  position: relative;
-}
-.flashcard-inner.flipped { transform: rotateY(180deg); }
-.flashcard-face {
-  width: 100%;
+/* Flat card — no 3D flip, reliable on all mobile browsers */
+.fc-card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 24px;
   box-shadow: var(--shadow);
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-}
-.flashcard-back {
-  position: absolute;
-  top: 0; left: 0;
-  transform: rotateY(180deg);
+  min-height: 220px;
 }
 .fc-qid { font-size: 12px; font-weight: 600; color: var(--accent); letter-spacing: 0.05em; margin-bottom: 8px; }
-.fc-question { font-size: 17px; font-weight: 600; line-height: 1.5; color: var(--text); min-height: 60px; }
-.fc-tap-hint { font-size: 12px; color: var(--text2); text-align: center; margin-top: 16px; }
-.fc-answer-label { font-size: 12px; font-weight: 600; color: var(--green); letter-spacing: 0.05em; margin-bottom: 8px; text-transform: uppercase; }
-.fc-answer { font-size: 18px; font-weight: 700; color: var(--text); line-height: 1.4; margin-bottom: 14px; }
-.fc-all-answers { border-top: 1px solid var(--border); padding-top: 14px; margin-top: 14px; }
-.fc-all-label { font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+.fc-question { font-size: 17px; font-weight: 600; line-height: 1.5; color: var(--text); margin-bottom: 16px; }
+
+/* Answer options shown before reveal — neutral style */
+.fc-options { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
 .fc-option {
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  padding: 8px 10px;
-  border-radius: 8px;
-  margin-bottom: 6px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  background: var(--bg);
   font-size: 14px;
   line-height: 1.4;
+  transition: background 0.25s, border-color 0.25s, opacity 0.25s;
 }
-.fc-option.correct { background: rgba(34,197,94,0.12); }
-.fc-option.wrong { background: rgba(239,68,68,0.08); color: var(--text2); }
-.fc-option-letter { font-weight: 700; color: var(--text2); min-width: 18px; }
-.fc-option.correct .fc-option-letter { color: var(--green); }
+/* After reveal */
+.fc-option.fc-correct { background: rgba(34,197,94,0.15); border-color: var(--green); }
+.fc-option.fc-wrong   { opacity: 0.45; }
+.fc-option-letter { font-weight: 700; color: var(--text2); min-width: 20px; flex-shrink: 0; }
+.fc-option.fc-correct .fc-option-letter { color: var(--green); }
 
-.fc-actions { display: flex; gap: 12px; }
-.fc-actions .btn { flex: 1; }
+/* Show Answer hint text */
+.fc-tap-hint { font-size: 13px; color: var(--text2); text-align: center; margin-top: 16px; }
+
+/* Bottom action rows */
+.fc-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+.fc-grade-row { display: flex; gap: 10px; }
+.fc-grade-row .btn { flex: 1; min-height: 54px; font-size: 16px; font-weight: 700; }
+.fc-nav-row { display: flex; gap: 10px; align-items: center; }
+.fc-nav-row .btn { min-height: 48px; }
+.fc-nav-back { min-width: 90px; }
+.fc-nav-show { flex: 1; }
 
 .fc-controls { display: flex; gap: 8px; align-items: center; }
 .fc-tts-btn { background: var(--bg3); border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; color: var(--text); transition: background var(--transition); flex-shrink: 0; }
@@ -691,31 +681,25 @@ body {
         <div class="progress-fill" id="fc-bar" style="width:0%"></div>
       </div>
 
-      <div class="flashcard-scene" id="flashcard-scene" onclick="flipCard()">
-        <div class="flashcard-inner" id="flashcard-inner">
-          <!-- Front -->
-          <div class="flashcard-face flashcard-front">
-            <div class="fc-qid" id="fc-qid-front">T1A01</div>
-            <div class="fc-question" id="fc-question">Loading…</div>
-            <div class="fc-tap-hint">Tap to reveal answer →</div>
-          </div>
-          <!-- Back -->
-          <div class="flashcard-face flashcard-back">
-            <div class="fc-qid" id="fc-qid-back">T1A01</div>
-            <div class="fc-answer-label">✓ Correct Answer</div>
-            <div class="fc-answer" id="fc-answer">Answer text</div>
-            <div class="fc-all-answers" id="fc-all-answers"></div>
-          </div>
+      <!-- Flat card: question + options always visible; answer revealed on demand -->
+      <div class="fc-card" id="fc-card">
+        <div class="fc-qid" id="fc-qid">T1A01</div>
+        <div class="fc-question" id="fc-question">Loading…</div>
+        <div class="fc-options" id="fc-options"></div>
+      </div>
+
+      <!-- Bottom actions -->
+      <div class="fc-actions" id="fc-actions">
+        <!-- Before reveal: Back nav + Show Answer -->
+        <div class="fc-nav-row" id="fc-pre-reveal">
+          <button class="btn btn-secondary fc-nav-back" id="fc-back-btn" onclick="prevCard()" disabled>← Back</button>
+          <button class="btn btn-primary fc-nav-show" onclick="revealAnswer()">Show Answer</button>
         </div>
-      </div>
-
-      <div class="fc-actions" id="fc-actions" style="display:none">
-        <button class="btn btn-red" onclick="markCard(false)">✗ Still Learning</button>
-        <button class="btn btn-green" onclick="markCard(true)">✓ Got It</button>
-      </div>
-
-      <div class="fc-actions" id="fc-flip-hint" style="">
-        <button class="btn btn-secondary btn-full" onclick="flipCard()">Flip Card</button>
+        <!-- After reveal: Got It / Missed It -->
+        <div class="fc-grade-row" id="fc-post-reveal" style="display:none">
+          <button class="btn btn-red" onclick="markCard(false)">❌ Missed It</button>
+          <button class="btn btn-green" onclick="markCard(true)">✅ Got It</button>
+        </div>
       </div>
     </div>
 
@@ -1247,18 +1231,15 @@ function loadCard(idx) {
   const q = fcDeck[idx];
   fcFlipped = false;
 
-  document.getElementById('flashcard-inner').classList.remove('flipped');
-  document.getElementById('fc-qid-front').textContent = q.id;
-  document.getElementById('fc-qid-back').textContent = q.id;
-  document.getElementById('fc-question').textContent = q.question;
-  document.getElementById('fc-answer').textContent = q.answers[q.correct];
-
-  // All answers on back
   const letters = ['A', 'B', 'C', 'D'];
-  document.getElementById('fc-all-answers').innerHTML =
-    `<div class="fc-all-label">All Options</div>` +
+
+  document.getElementById('fc-qid').textContent = q.id;
+  document.getElementById('fc-question').textContent = q.question;
+
+  // Render options in neutral (unrevealed) state
+  document.getElementById('fc-options').innerHTML =
     q.answers.map((a, i) =>
-      `<div class="fc-option ${i === q.correct ? 'correct' : 'wrong'}">
+      `<div class="fc-option" id="fc-opt-${i}">
         <span class="fc-option-letter">${letters[i]}</span>
         <span>${a}</span>
       </div>`
@@ -1267,8 +1248,12 @@ function loadCard(idx) {
   document.getElementById('fc-current').textContent = idx + 1;
   document.getElementById('fc-bar').style.width = (idx / fcDeck.length * 100) + '%';
 
-  document.getElementById('fc-actions').style.display = 'none';
-  document.getElementById('fc-flip-hint').style.display = '';
+  // Show pre-reveal row, hide grade row
+  document.getElementById('fc-pre-reveal').style.display = 'flex';
+  document.getElementById('fc-post-reveal').style.display = 'none';
+
+  // Back button: enable only if not on first card
+  document.getElementById('fc-back-btn').disabled = (idx === 0);
 
   // Track seen
   if (!state.cards[q.id]) state.cards[q.id] = {};
@@ -1281,12 +1266,36 @@ function loadCard(idx) {
   if (seenCount >= QUESTION_POOL.length) checkBadge('all_seen');
 }
 
-function flipCard() {
+function revealAnswer() {
   if (fcFlipped) return;
   fcFlipped = true;
-  document.getElementById('flashcard-inner').classList.add('flipped');
-  document.getElementById('fc-actions').style.display = 'flex';
-  document.getElementById('fc-flip-hint').style.display = 'none';
+  const q = fcDeck[fcIndex];
+
+  // Highlight correct, dim wrong
+  q.answers.forEach((_, i) => {
+    const el = document.getElementById(`fc-opt-${i}`);
+    if (!el) return;
+    if (i === q.correct) {
+      el.classList.add('fc-correct');
+    } else {
+      el.classList.add('fc-wrong');
+    }
+  });
+
+  // Swap action rows
+  document.getElementById('fc-pre-reveal').style.display = 'none';
+  document.getElementById('fc-post-reveal').style.display = 'flex';
+
+  checkBadge('first_flip');
+}
+
+// Legacy alias kept for TTS logic
+function flipCard() { revealAnswer(); }
+
+function prevCard() {
+  if (fcIndex <= 0) return;
+  fcIndex--;
+  loadCard(fcIndex);
 }
 
 function markCard(correct) {
