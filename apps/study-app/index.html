@@ -319,25 +319,21 @@ body {
   background: var(--bg);
   font-size: 14px;
   line-height: 1.4;
+  cursor: pointer;
   transition: background 0.25s, border-color 0.25s, opacity 0.25s;
+  -webkit-tap-highlight-color: transparent;
 }
 /* After reveal */
 .fc-option.fc-correct { background: rgba(34,197,94,0.15); border-color: var(--green); }
-.fc-option.fc-wrong   { opacity: 0.45; }
+.fc-option.fc-wrong { opacity: 0.45; }
+.fc-option.fc-selected-wrong { background: rgba(239,68,68,0.15); border-color: var(--red); opacity: 1; }
 .fc-option-letter { font-weight: 700; color: var(--text2); min-width: 20px; flex-shrink: 0; }
 .fc-option.fc-correct .fc-option-letter { color: var(--green); }
+.fc-option.fc-selected-wrong .fc-option-letter { color: var(--red); }
 
-/* Show Answer hint text */
+/* Tap-to-answer hint text */
 .fc-tap-hint { font-size: 13px; color: var(--text2); text-align: center; margin-top: 16px; }
-
-/* Bottom action rows */
-.fc-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
-.fc-grade-row { display: flex; gap: 10px; }
-.fc-grade-row .btn { flex: 1; min-height: 54px; font-size: 16px; font-weight: 700; }
-.fc-nav-row { display: flex; gap: 10px; align-items: center; }
-.fc-nav-row .btn { min-height: 48px; }
-.fc-nav-back { min-width: 90px; }
-.fc-nav-show { flex: 1; }
+.fc-header-back { flex-shrink: 0; min-height: 40px; padding: 8px 14px; font-size: 13px; }
 
 .fc-controls { display: flex; gap: 8px; align-items: center; }
 .fc-tts-btn { background: var(--bg3); border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; color: var(--text); transition: background var(--transition); flex-shrink: 0; }
@@ -669,38 +665,28 @@ body {
     <!-- Active flashcard session -->
     <div id="fc-session" style="display:none">
       <div class="fc-header">
+        <button class="btn btn-secondary fc-header-back" id="fc-back-btn" onclick="prevCard()" disabled>← Back</button>
         <div class="fc-header-info">
           <div class="fc-counter"><span id="fc-current">1</span> / <span id="fc-total">0</span></div>
           <div class="fc-section-label" id="fc-section-label">All Questions</div>
         </div>
-        <button class="fc-tts-btn" id="fc-tts-btn" onclick="speakQuestion()" title="Read question aloud">🔊</button>
-        <button class="btn btn-secondary" style="padding:8px 14px;font-size:13px;" onclick="endFlashcards()">✕ Exit</button>
+        <div class="fc-controls">
+          <button class="fc-tts-btn" id="fc-tts-btn" onclick="speakQuestion()" title="Read question aloud">🔊</button>
+          <button class="btn btn-secondary" style="padding:8px 14px;font-size:13px;" onclick="endFlashcards()">✕ Exit</button>
+        </div>
       </div>
 
       <div class="progress-bar fc-progress">
         <div class="progress-fill" id="fc-bar" style="width:0%"></div>
       </div>
 
-      <!-- Flat card: question + options always visible; answer revealed on demand -->
       <div class="fc-card" id="fc-card">
         <div class="fc-qid" id="fc-qid">T1A01</div>
         <div class="fc-question" id="fc-question">Loading…</div>
         <div class="fc-options" id="fc-options"></div>
       </div>
 
-      <!-- Bottom actions -->
-      <div class="fc-actions" id="fc-actions">
-        <!-- Before reveal: Back nav + Show Answer -->
-        <div class="fc-nav-row" id="fc-pre-reveal">
-          <button class="btn btn-secondary fc-nav-back" id="fc-back-btn" onclick="prevCard()" disabled>← Back</button>
-          <button class="btn btn-primary fc-nav-show" onclick="revealAnswer()">Show Answer</button>
-        </div>
-        <!-- After reveal: Got It / Missed It -->
-        <div class="fc-grade-row" id="fc-post-reveal" style="display:none">
-          <button class="btn btn-red" onclick="markCard(false)">❌ Missed It</button>
-          <button class="btn btn-green" onclick="markCard(true)">✅ Got It</button>
-        </div>
-      </div>
+      <div class="fc-tap-hint">Tap an answer to see the correct choice</div>
     </div>
 
     <!-- Done state -->
@@ -1112,8 +1098,16 @@ let fcSection = 'all';
 let fcFlipped = false;
 let fcSessionCorrect = 0;
 let fcSessionWrong = 0;
+let fcAdvanceTimer = null;
+
+function clearFlashcardAdvanceTimer() {
+  if (!fcAdvanceTimer) return;
+  clearTimeout(fcAdvanceTimer);
+  fcAdvanceTimer = null;
+}
 
 function showFlashcardMenu() {
+  clearFlashcardAdvanceTimer();
   document.getElementById('fc-mode-select').style.display = 'block';
   document.getElementById('fc-session').style.display = 'none';
   document.getElementById('fc-done').style.display = 'none';
@@ -1186,6 +1180,7 @@ function buildDeck(section) {
 }
 
 function startFlashcards() {
+  clearFlashcardAdvanceTimer();
   fcDeck = buildDeck(fcSection);
   fcIndex = 0;
   fcSessionCorrect = 0;
@@ -1204,7 +1199,6 @@ function startFlashcards() {
 
   loadCard(0);
   recordStudyDay();
-  checkBadge('first_flip');
 }
 
 function startPracticeTest() {
@@ -1224,6 +1218,7 @@ function startSectionFlashcards(se) {
 }
 
 function loadCard(idx) {
+  clearFlashcardAdvanceTimer();
   if (idx >= fcDeck.length) {
     showFcDone();
     return;
@@ -1236,10 +1231,9 @@ function loadCard(idx) {
   document.getElementById('fc-qid').textContent = q.id;
   document.getElementById('fc-question').textContent = q.question;
 
-  // Render options in neutral (unrevealed) state
   document.getElementById('fc-options').innerHTML =
     q.answers.map((a, i) =>
-      `<div class="fc-option" id="fc-opt-${i}">
+      `<div class="fc-option" id="fc-opt-${i}" onclick="selectFlashcardAnswer(${i})" onkeydown="handleFlashcardOptionKey(event, ${i})" role="button" tabindex="0">
         <span class="fc-option-letter">${letters[i]}</span>
         <span>${a}</span>
       </div>`
@@ -1247,45 +1241,63 @@ function loadCard(idx) {
 
   document.getElementById('fc-current').textContent = idx + 1;
   document.getElementById('fc-bar').style.width = (idx / fcDeck.length * 100) + '%';
-
-  // Show pre-reveal row, hide grade row
-  document.getElementById('fc-pre-reveal').style.display = 'flex';
-  document.getElementById('fc-post-reveal').style.display = 'none';
-
-  // Back button: enable only if not on first card
   document.getElementById('fc-back-btn').disabled = (idx === 0);
 
-  // Track seen
   if (!state.cards[q.id]) state.cards[q.id] = {};
   state.cards[q.id].seen = true;
   saveState();
 
-  // Check badges
   const seenCount = Object.values(state.cards).filter(c => c.seen).length;
   if (seenCount >= 100) checkBadge('100_cards');
   if (seenCount >= QUESTION_POOL.length) checkBadge('all_seen');
 }
 
-function revealAnswer() {
-  if (fcFlipped) return;
-  fcFlipped = true;
-  const q = fcDeck[fcIndex];
+function handleFlashcardOptionKey(event, selectedIndex) {
+  if (event.key !== 'Enter' && event.key !== ' ') return;
+  event.preventDefault();
+  selectFlashcardAnswer(selectedIndex);
+}
 
-  // Highlight correct, dim wrong
+function showFlashcardFeedback(selectedIndex) {
+  const q = fcDeck[fcIndex];
+  if (!q) return false;
+
   q.answers.forEach((_, i) => {
     const el = document.getElementById(`fc-opt-${i}`);
     if (!el) return;
+    el.onclick = null;
+    el.tabIndex = -1;
     if (i === q.correct) {
       el.classList.add('fc-correct');
     } else {
       el.classList.add('fc-wrong');
     }
+    if (selectedIndex !== q.correct && i === selectedIndex) {
+      el.classList.add('fc-selected-wrong');
+    }
   });
 
-  // Swap action rows
-  document.getElementById('fc-pre-reveal').style.display = 'none';
-  document.getElementById('fc-post-reveal').style.display = 'flex';
+  return selectedIndex === q.correct;
+}
 
+function selectFlashcardAnswer(selectedIndex) {
+  if (fcFlipped) return;
+  fcFlipped = true;
+
+  const pickedCorrectly = showFlashcardFeedback(selectedIndex);
+  document.getElementById('fc-back-btn').disabled = true;
+  checkBadge('first_flip');
+
+  fcAdvanceTimer = setTimeout(() => {
+    fcAdvanceTimer = null;
+    markCard(pickedCorrectly);
+  }, 1200);
+}
+
+function revealAnswer() {
+  if (fcFlipped) return;
+  fcFlipped = true;
+  showFlashcardFeedback(fcDeck[fcIndex]?.correct);
   checkBadge('first_flip');
 }
 
@@ -1293,6 +1305,7 @@ function revealAnswer() {
 function flipCard() { revealAnswer(); }
 
 function prevCard() {
+  clearFlashcardAdvanceTimer();
   if (fcIndex <= 0) return;
   fcIndex--;
   loadCard(fcIndex);
@@ -1342,6 +1355,7 @@ function restartFlashcards() {
 }
 
 function endFlashcards() {
+  clearFlashcardAdvanceTimer();
   showFlashcardMenu();
 }
 
