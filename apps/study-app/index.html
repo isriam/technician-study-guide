@@ -339,6 +339,7 @@ body {
 .fc-tts-btn { background: var(--bg3); border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; color: var(--text); transition: background var(--transition); flex-shrink: 0; }
 @media (hover: hover) { .fc-tts-btn:hover { background: var(--border); } }
 .fc-tts-btn.speaking { color: var(--accent); }
+.fc-nav-row { display: flex; margin-top: 12px; }
 
 /* ===== SECTION SELECT ===== */
 .fc-mode-select { display: flex; flex-direction: column; gap: 12px; }
@@ -687,6 +688,9 @@ body {
       </div>
 
       <div class="fc-tap-hint">Tap an answer to see the correct choice</div>
+      <div class="fc-nav-row" id="fc-wrong-next" style="display:none">
+        <button class="btn btn-primary btn-full" onclick="fcAdvanceNext()">Next →</button>
+      </div>
     </div>
 
     <!-- Done state -->
@@ -1219,6 +1223,7 @@ function startSectionFlashcards(se) {
 
 function loadCard(idx) {
   clearFlashcardAdvanceTimer();
+  document.getElementById('fc-wrong-next').style.display = 'none';
   if (idx >= fcDeck.length) {
     showFcDone();
     return;
@@ -1288,10 +1293,16 @@ function selectFlashcardAnswer(selectedIndex) {
   document.getElementById('fc-back-btn').disabled = true;
   checkBadge('first_flip');
 
-  fcAdvanceTimer = setTimeout(() => {
-    fcAdvanceTimer = null;
-    markCard(pickedCorrectly);
-  }, 1200);
+  if (pickedCorrectly) {
+    fcAdvanceTimer = setTimeout(() => {
+      fcAdvanceTimer = null;
+      markCard(true);
+    }, 1200);
+    return;
+  }
+
+  markCard(false, { advance: false });
+  document.getElementById('fc-wrong-next').style.display = 'flex';
 }
 
 function revealAnswer() {
@@ -1311,7 +1322,13 @@ function prevCard() {
   loadCard(fcIndex);
 }
 
-function markCard(correct) {
+function fcAdvanceNext() {
+  document.getElementById('fc-wrong-next').style.display = 'none';
+  fcIndex++;
+  loadCard(fcIndex);
+}
+
+function markCard(correct, { advance = true } = {}) {
   const q = fcDeck[fcIndex];
   if (!state.cards[q.id]) state.cards[q.id] = {};
   const c = state.cards[q.id];
@@ -1329,6 +1346,8 @@ function markCard(correct) {
   }
   saveState();
   checkBadges();
+
+  if (!advance) return;
 
   fcIndex++;
   loadCard(fcIndex);
