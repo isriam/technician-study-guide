@@ -340,6 +340,22 @@ body {
 @media (hover: hover) { .fc-tts-btn:hover { background: var(--border); } }
 .fc-tts-btn.speaking { color: var(--accent); }
 .fc-nav-row { display: flex; margin-top: 12px; }
+/* Sticky next button on mobile so it's always visible after wrong answer */
+@media (max-width: 600px) {
+  #fc-wrong-next {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin-top: 0;
+    padding: 12px 16px;
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+    z-index: 100;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.15);
+  }
+}
 
 /* ===== SECTION SELECT ===== */
 .fc-mode-select { display: flex; flex-direction: column; gap: 12px; }
@@ -1302,14 +1318,19 @@ function selectFlashcardAnswer(selectedIndex) {
   }
 
   markCard(false, { advance: false });
-  document.getElementById('fc-wrong-next').style.display = 'flex';
+  const wrongNext = document.getElementById('fc-wrong-next');
+  wrongNext.style.display = 'flex';
+  wrongNext.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 function revealAnswer() {
   if (fcFlipped) return;
   fcFlipped = true;
   showFlashcardFeedback(fcDeck[fcIndex]?.correct);
+  document.getElementById('fc-back-btn').disabled = true;
   checkBadge('first_flip');
+  // Show Next button after reveal so user isn't stuck
+  document.getElementById('fc-wrong-next').style.display = 'flex';
 }
 
 // Legacy alias kept for TTS logic
