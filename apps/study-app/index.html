@@ -8,6 +8,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="HamStudy">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>Ham Radio Technician Study</title>
@@ -47,7 +48,7 @@
   --surface: #16213e;
   --border: #2d3561;
   --text: #e2e8f0;
-  --text2: #94a3b8;
+  --text2: #a3b3c8;
   --shadow: 0 4px 24px rgba(0,0,0,0.4);
   --shadow-lg: 0 8px 40px rgba(0,0,0,0.6);
 }
@@ -99,7 +100,7 @@ body {
   background: var(--bg3);
   border: none;
   border-radius: 50%;
-  width: 38px; height: 38px;
+  width: 44px; height: 44px;
   cursor: pointer;
   font-size: 18px;
   display: flex; align-items: center; justify-content: center;
@@ -333,10 +334,10 @@ body {
 
 /* Tap-to-answer hint text */
 .fc-tap-hint { font-size: 13px; color: var(--text2); text-align: center; margin-top: 16px; }
-.fc-header-back { flex-shrink: 0; min-height: 40px; padding: 8px 14px; font-size: 13px; }
+.fc-header-back { flex-shrink: 0; min-height: 44px; padding: 8px 14px; font-size: 13px; }
 
 .fc-controls { display: flex; gap: 8px; align-items: center; }
-.fc-tts-btn { background: var(--bg3); border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; color: var(--text); transition: background var(--transition); flex-shrink: 0; }
+.fc-tts-btn { background: var(--bg3); border: none; border-radius: 50%; width: 44px; height: 44px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; color: var(--text); transition: background var(--transition); flex-shrink: 0; }
 @media (hover: hover) { .fc-tts-btn:hover { background: var(--border); } }
 .fc-tts-btn.speaking { color: var(--accent); }
 .fc-nav-row { display: flex; margin-top: 12px; }
@@ -584,18 +585,64 @@ body {
 .flex-row { display: flex; align-items: center; gap: 10px; }
 .flex-between { display: flex; align-items: center; justify-content: space-between; }
 .small { font-size: 13px; }
+
+/* ===== ACCESSIBILITY ===== */
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 16px;
+  z-index: 999;
+  background: var(--accent);
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+  transition: top 0.2s;
+}
+.skip-link:focus { top: calc(8px + var(--safe-top)); }
+
+/* Visible focus indicators for keyboard navigation */
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+button:focus-visible, .nav-btn:focus-visible, .quick-btn:focus-visible,
+.section-card:focus-visible, .mode-option:focus-visible, .chip:focus-visible,
+.answer-option:focus-visible, .fc-option:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 6px rgba(233,69,96,0.15);
+}
+
+/* Screen-reader only utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
 </style>
 </head>
 <body>
 
+<!-- Skip to content link for keyboard/screen reader users -->
+<a href="#app" class="skip-link">Skip to content</a>
+
 <!-- Top Bar -->
-<div id="topbar">
+<header id="topbar" role="banner">
   <div id="topbar-title">📻 <span>Ham</span>Study</div>
-  <button id="theme-btn" onclick="toggleTheme()" title="Toggle dark/light mode">🌙</button>
-</div>
+  <button id="theme-btn" onclick="toggleTheme()" aria-label="Toggle dark/light mode">🌙</button>
+</header>
 
 <!-- Main App -->
-<div id="app">
+<main id="app" role="main">
 
   <!-- HOME PAGE -->
   <div id="page-home" class="page active">
@@ -613,7 +660,7 @@ body {
       <div class="card-label">Exam Readiness</div>
       <div class="readiness-score" id="readiness-score">0%</div>
       <div class="readiness-desc" id="readiness-desc">Start studying to track your progress</div>
-      <div class="progress-bar readiness-bar mt-4">
+      <div class="progress-bar readiness-bar mt-4" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Exam readiness progress" id="readiness-bar-container">
         <div class="progress-fill" id="readiness-bar" style="width:0%"></div>
       </div>
     </div>
@@ -680,7 +727,7 @@ body {
     <div id="fc-mode-select">
       <div class="page-title">Flashcards</div>
       <div class="page-sub">Select study mode</div>
-      <div class="fc-mode-select mt-4" id="section-chooser"></div>
+      <div class="fc-mode-select mt-4" id="section-chooser" role="listbox" aria-label="Study mode selection"></div>
       <div class="mt-4">
         <button class="btn btn-primary btn-full" onclick="startFlashcards()">Start Studying</button>
       </div>
@@ -695,12 +742,12 @@ body {
           <div class="fc-section-label" id="fc-section-label">All Questions</div>
         </div>
         <div class="fc-controls">
-          <button class="fc-tts-btn" id="fc-tts-btn" onclick="speakQuestion()" title="Read question aloud">🔊</button>
+          <button class="fc-tts-btn" id="fc-tts-btn" onclick="speakQuestion()" title="Read question aloud" aria-label="Read question aloud">🔊</button>
           <button class="btn btn-secondary" style="padding:8px 14px;font-size:13px;" onclick="endFlashcards()">✕ Exit</button>
         </div>
       </div>
 
-      <div class="progress-bar fc-progress">
+      <div class="progress-bar fc-progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Flashcard progress" id="fc-bar-container">
         <div class="progress-fill" id="fc-bar" style="width:0%"></div>
       </div>
 
@@ -750,7 +797,7 @@ body {
         <div class="test-qnum">Question <span id="test-qnum">1</span> of 35</div>
         <div class="test-timer" id="test-timer">⏱ 26:00</div>
       </div>
-      <div class="progress-bar">
+      <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Test progress" id="test-bar-container">
         <div class="progress-fill blue" id="test-bar" style="width:0%"></div>
       </div>
       <div class="test-question-card">
@@ -836,35 +883,38 @@ body {
     </div>
   </div>
 
-</div>
+</main>
+
+<!-- Live region for screen reader announcements -->
+<div id="sr-announce" aria-live="polite" aria-atomic="true" class="sr-only"></div>
 
 <!-- Bottom Nav -->
-<nav id="nav">
-  <button class="nav-btn active" id="nav-home" onclick="showPage('home')">
-    <span class="nav-icon">🏠</span>Home
+<nav id="nav" role="navigation" aria-label="Main navigation">
+  <button class="nav-btn active" id="nav-home" onclick="showPage('home')" aria-current="page">
+    <span class="nav-icon" aria-hidden="true">🏠</span>Home
   </button>
   <button class="nav-btn" id="nav-flashcard" onclick="showPage('flashcard')">
-    <span class="nav-icon">🃏</span>Flashcards
+    <span class="nav-icon" aria-hidden="true">🃏</span>Flashcards
   </button>
   <button class="nav-btn" id="nav-test" onclick="showPage('test')">
-    <span class="nav-icon">📝</span>Exam
+    <span class="nav-icon" aria-hidden="true">📝</span>Exam
   </button>
   <button class="nav-btn" id="nav-sections" onclick="showPage('sections')">
-    <span class="nav-icon">📚</span>Sections
+    <span class="nav-icon" aria-hidden="true">📚</span>Sections
   </button>
   <button class="nav-btn" id="nav-progress" onclick="showPage('progress')">
-    <span class="nav-icon">📊</span>Progress
+    <span class="nav-icon" aria-hidden="true">📊</span>Progress
   </button>
 </nav>
 
 <!-- Reset Confirm Modal -->
-<div class="modal-overlay" id="reset-modal" onclick="closeModal('reset-modal')">
+<div class="modal-overlay" id="reset-modal" onclick="closeModal('reset-modal')" role="dialog" aria-modal="true" aria-labelledby="reset-modal-title">
   <div class="modal" onclick="event.stopPropagation()">
-    <div class="modal-title">Reset All Progress?</div>
+    <h2 class="modal-title" id="reset-modal-title">Reset All Progress?</h2>
     <div class="modal-sub">This will clear all your flashcard history, test scores, and streak data. This cannot be undone.</div>
     <div class="modal-actions">
       <button class="btn btn-red btn-full" onclick="doReset()">Yes, Reset Everything</button>
-      <button class="btn btn-secondary btn-full" onclick="closeModal('reset-modal')">Cancel</button>
+      <button class="btn btn-secondary btn-full" id="reset-cancel-btn" onclick="closeModal('reset-modal')">Cancel</button>
     </div>
   </div>
 </div>
@@ -933,27 +983,113 @@ const BADGES = [
   { id: 'ready', icon: '📡', name: 'Exam Ready', desc: 'Reach 90% readiness' },
 ];
 
+const STATE_KEY = 'hamradio_state_v2';
+const VALID_BADGE_IDS = new Set(BADGES.map(b => b.id));
+const VALID_POOL_IDS = new Set(POOLS.map(p => p.id));
+const VALID_THEMES = new Set(['auto', 'light', 'dark']);
+
+function createDefaultState() {
+  return {
+    cards: {},         // { [qid]: { seen: bool, correct: int, wrong: int, mastered: bool } }
+    tests: [],         // [{ score, total, pct, date, wrong: [qids] }]
+    streak: 0,
+    lastStudyDay: null,
+    badges: [],        // earned badge ids
+    theme: 'auto',
+    selectedPool: null, // '2022-2026' | '2026-2030' | null (auto)
+  };
+}
+
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function isPlainObject(value) {
+  return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+}
+
+function toNonNegativeInt(value, fallback = 0) {
+  const num = Number(value);
+  if (!Number.isFinite(num)) return fallback;
+  return Math.max(0, Math.round(num));
+}
+
+function normalizeIsoDate(value) {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date.toISOString();
+}
+
+function normalizeStudyDay(value) {
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
+  const date = new Date(`${value}T00:00:00Z`);
+  return Number.isNaN(date.getTime()) ? null : value;
+}
+
+function normalizeSavedState(saved) {
+  const next = createDefaultState();
+  if (!isPlainObject(saved)) return next;
+
+  if (isPlainObject(saved.cards)) {
+    for (const [qid, card] of Object.entries(saved.cards)) {
+      if (!isPlainObject(card) || typeof qid !== 'string') continue;
+      next.cards[qid] = {
+        seen: card.seen === true,
+        correct: toNonNegativeInt(card.correct, 0),
+        wrong: toNonNegativeInt(card.wrong, 0),
+        mastered: card.mastered === true,
+      };
+    }
+  }
+
+  if (Array.isArray(saved.tests)) {
+    next.tests = saved.tests.map(test => {
+      if (!isPlainObject(test)) return null;
+      const total = Math.max(1, toNonNegativeInt(test.total, 35));
+      const score = Math.min(total, toNonNegativeInt(test.score, 0));
+      const pct = Math.min(100, toNonNegativeInt(test.pct, Math.round(score / total * 100)));
+      const date = normalizeIsoDate(test.date);
+      if (!date) return null;
+      return {
+        score,
+        total,
+        pct,
+        date,
+        wrong: Array.isArray(test.wrong)
+          ? test.wrong.filter(qid => typeof qid === 'string').slice(0, total)
+          : [],
+      };
+    }).filter(Boolean);
+  }
+
+  next.streak = toNonNegativeInt(saved.streak, 0);
+  next.lastStudyDay = normalizeStudyDay(saved.lastStudyDay);
+  next.badges = Array.isArray(saved.badges)
+    ? [...new Set(saved.badges.filter(id => VALID_BADGE_IDS.has(id)))]
+    : [];
+  next.theme = VALID_THEMES.has(saved.theme) ? saved.theme : next.theme;
+  next.selectedPool = VALID_POOL_IDS.has(saved.selectedPool) ? saved.selectedPool : null;
+
+  return next;
+}
+
 // State loaded from localStorage
-let state = {
-  cards: {},         // { [qid]: { seen: bool, correct: int, wrong: int, mastered: bool } }
-  tests: [],         // [{ score, total, pct, date, wrong: [qids] }]
-  streak: 0,
-  lastStudyDay: null,
-  badges: [],        // earned badge ids
-  theme: 'auto',
-  selectedPool: null, // '2022-2026' | '2026-2030' | null (auto)
-};
+let state = createDefaultState();
 
 function loadState() {
   try {
-    const saved = localStorage.getItem('hamradio_state_v2');
-    if (saved) state = { ...state, ...JSON.parse(saved) };
+    const saved = localStorage.getItem(STATE_KEY);
+    if (saved) state = normalizeSavedState(JSON.parse(saved));
   } catch(e) {}
   updateStreak();
 }
 
 function saveState() {
-  try { localStorage.setItem('hamradio_state_v2', JSON.stringify(state)); } catch(e) {}
+  try { localStorage.setItem(STATE_KEY, JSON.stringify(state)); } catch(e) {}
 }
 
 function updateStreak() {
@@ -990,8 +1126,10 @@ function applyTheme(theme) {
   } else {
     document.documentElement.setAttribute('data-theme', theme);
   }
-  document.getElementById('theme-btn').textContent =
-    document.documentElement.getAttribute('data-theme') === 'dark' ? '☀️' : '🌙';
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const btn = document.getElementById('theme-btn');
+  btn.textContent = isDark ? '☀️' : '🌙';
+  btn.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
 }
 
 function toggleTheme() {
@@ -1012,11 +1150,17 @@ let currentPage = 'home';
 
 function showPage(page, skipMenu) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => {
+    b.classList.remove('active');
+    b.removeAttribute('aria-current');
+  });
 
   document.getElementById(`page-${page}`).classList.add('active');
   const navBtn = document.getElementById(`nav-${page}`);
-  if (navBtn) navBtn.classList.add('active');
+  if (navBtn) {
+    navBtn.classList.add('active');
+    navBtn.setAttribute('aria-current', 'page');
+  }
 
   currentPage = page;
   if (page === 'home') renderHome();
@@ -1025,7 +1169,14 @@ function showPage(page, skipMenu) {
   if (page === 'flashcard' && !skipMenu) showFlashcardMenu();
   if (page === 'test' && !skipMenu) showTestStart();
 
+  // Announce page change to screen readers
+  announce(page.charAt(0).toUpperCase() + page.slice(1) + ' page');
   window.scrollTo(0, 0);
+}
+
+function announce(message) {
+  const el = document.getElementById('sr-announce');
+  if (el) { el.textContent = ''; requestAnimationFrame(() => { el.textContent = message; }); }
 }
 
 // ===== STATS / READINESS =====
@@ -1075,6 +1226,8 @@ function renderHome() {
   document.getElementById('readiness-score').textContent = stats.readiness + '%';
   document.getElementById('readiness-desc').textContent = getReadinessDesc(stats.readiness);
   document.getElementById('readiness-bar').style.width = stats.readiness + '%';
+  const readinessContainer = document.getElementById('readiness-bar-container');
+  if (readinessContainer) readinessContainer.setAttribute('aria-valuenow', stats.readiness);
 
   document.getElementById('stat-seen').textContent = stats.seen;
   document.getElementById('stat-mastered').textContent = stats.mastered;
@@ -1100,12 +1253,12 @@ function renderSections() {
     const pct = Math.round((mastered / total) * 100);
     const barColor = pct >= 80 ? 'green' : pct >= 40 ? '' : '';
 
-    return `<div class="section-card" onclick="startSectionFlashcards('${se}')">
+    return `<div class="section-card" onclick="startSectionFlashcards('${se}')" tabindex="0" role="button" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();startSectionFlashcards('${se}')}" aria-label="${SUBELEMENT_NAMES[se]}, ${total} questions, ${mastered} mastered">
       <div class="section-header">
         <div class="section-title">${SUBELEMENT_NAMES[se]}</div>
         <div class="section-count">${total} Qs</div>
       </div>
-      <div class="progress-bar">
+      <div class="progress-bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100" aria-label="${SUBELEMENT_NAMES[se]} mastery">
         <div class="progress-fill ${barColor}" style="width:${pct}%"></div>
       </div>
       <div class="section-stats">
@@ -1143,17 +1296,17 @@ function showFlashcardMenu() {
   const subelements = Object.keys(SUBELEMENT_NAMES).sort();
 
   chooser.innerHTML = `
-    <div class="mode-option selected" data-se="all" onclick="selectSection(this, 'all')">
-      <div class="mode-option-title">📚 All Questions (411)</div>
+    <div class="mode-option selected" data-se="all" onclick="selectSection(this, 'all')" tabindex="0" role="option" aria-selected="true" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectSection(this,'all')}">
+      <div class="mode-option-title">📚 All Questions (${QUESTION_POOL.length})</div>
       <div class="mode-option-desc">Full pool — prioritizes questions you haven't seen or got wrong</div>
     </div>
-    <div class="mode-option" data-se="weak" onclick="selectSection(this, 'weak')">
+    <div class="mode-option" data-se="weak" onclick="selectSection(this, 'weak')" tabindex="0" role="option" aria-selected="false" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectSection(this,'weak')}">
       <div class="mode-option-title">⚡ Weak Spots Only</div>
       <div class="mode-option-desc">Questions you've gotten wrong or haven't studied yet</div>
     </div>
     ${subelements.map(se => {
       const count = QUESTION_POOL.filter(q => q.id.startsWith(se)).length;
-      return `<div class="mode-option" data-se="${se}" onclick="selectSection(this, '${se}')">
+      return `<div class="mode-option" data-se="${se}" onclick="selectSection(this, '${se}')" tabindex="0" role="option" aria-selected="false" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectSection(this,'${se}')}">
         <div class="mode-option-title">${SUBELEMENT_NAMES[se]} (${count})</div>
         <div class="mode-option-desc">${getSectionDesc(se)}</div>
       </div>`;
@@ -1169,8 +1322,12 @@ function getSectionDesc(se) {
 }
 
 function selectSection(el, se) {
-  document.querySelectorAll('.mode-option').forEach(e => e.classList.remove('selected'));
+  document.querySelectorAll('.mode-option').forEach(e => {
+    e.classList.remove('selected');
+    e.setAttribute('aria-selected', 'false');
+  });
   el.classList.add('selected');
+  el.setAttribute('aria-selected', 'true');
   fcSection = se;
 }
 
@@ -1264,12 +1421,15 @@ function loadCard(idx) {
     q.answers.map((a, i) =>
       `<div class="fc-option" id="fc-opt-${i}" onclick="selectFlashcardAnswer(${i})" onkeydown="handleFlashcardOptionKey(event, ${i})" role="button" tabindex="0">
         <span class="fc-option-letter">${letters[i]}</span>
-        <span>${a}</span>
+        <span>${escapeHtml(a)}</span>
       </div>`
     ).join('');
 
   document.getElementById('fc-current').textContent = idx + 1;
-  document.getElementById('fc-bar').style.width = (idx / fcDeck.length * 100) + '%';
+  const fcPct = Math.round(idx / fcDeck.length * 100);
+  document.getElementById('fc-bar').style.width = fcPct + '%';
+  const fcBarContainer = document.getElementById('fc-bar-container');
+  if (fcBarContainer) fcBarContainer.setAttribute('aria-valuenow', fcPct);
   document.getElementById('fc-back-btn').disabled = (idx === 0);
 
   if (!state.cards[q.id]) state.cards[q.id] = {};
@@ -1317,6 +1477,7 @@ function selectFlashcardAnswer(selectedIndex) {
   checkBadge('first_flip');
 
   if (pickedCorrectly) {
+    announce('Correct! Moving to next question.');
     fcAdvanceTimer = setTimeout(() => {
       fcAdvanceTimer = null;
       markCard(true);
@@ -1324,6 +1485,7 @@ function selectFlashcardAnswer(selectedIndex) {
     return;
   }
 
+  announce('Incorrect. The correct answer is highlighted. Press Next to continue.');
   markCard(false, { advance: false });
   const wrongNext = document.getElementById('fc-wrong-next');
   wrongNext.style.display = 'flex';
@@ -1541,7 +1703,10 @@ function renderTestQuestion() {
   document.getElementById('test-qnum').textContent = n;
   document.getElementById('test-qid').textContent = q.id;
   document.getElementById('test-question').textContent = q.question;
-  document.getElementById('test-bar').style.width = (n / 35 * 100) + '%';
+  const testPct = Math.round(n / 35 * 100);
+  document.getElementById('test-bar').style.width = testPct + '%';
+  const testBarContainer = document.getElementById('test-bar-container');
+  if (testBarContainer) testBarContainer.setAttribute('aria-valuenow', testPct);
 
   document.getElementById('test-prev-btn').disabled = testCurrentQ === 0;
   document.getElementById('test-next-btn').textContent =
@@ -1575,7 +1740,7 @@ function renderTestQuestion() {
     }
     return `<button class="answer-option ${cls}" onclick="selectAnswer(${i})" ${revealed ? 'disabled' : ''}>
       <span class="answer-letter">${letters[i]}</span>
-      <span>${a}</span>
+      <span>${escapeHtml(a)}</span>
     </button>`;
   }).join('');
 }
@@ -1680,11 +1845,11 @@ function showTestResults(correct, pct, pass, wrongQids) {
       if (!isWrong) return '';
       const selected = testAnswers[i];
       return `<div class="review-item wrong-item">
-        <div class="review-qid wrong-item">${q.id}</div>
-        <div class="review-q">${q.question}</div>
+        <div class="review-qid wrong-item">${escapeHtml(q.id)}</div>
+        <div class="review-q">${escapeHtml(q.question)}</div>
         <div class="review-answer">
-          ${selected >= 0 ? `<span class="wrong-ans">✗ ${q.answers[selected]}</span><br>` : ''}
-          <span class="right">✓ ${q.answers[q.correct]}</span>
+          ${selected >= 0 ? `<span class="wrong-ans">✗ ${escapeHtml(q.answers[selected])}</span><br>` : ''}
+          <span class="right">✓ ${escapeHtml(q.answers[q.correct])}</span>
         </div>
       </div>`;
     }).filter(Boolean).join('');
@@ -1709,10 +1874,10 @@ function renderProgress() {
       const d = new Date(t.date);
       const dateStr = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
       return `<div class="history-item">
-        <div class="history-score ${pass?'pass':'fail'}">${t.score}/35</div>
+        <div class="history-score ${pass?'pass':'fail'}">${escapeHtml(t.score)}/35</div>
         <div class="history-info">
-          <div>${t.pct}% · ${pass ? '✓ Pass' : '✗ Fail'}</div>
-          <div class="history-date">${dateStr}</div>
+          <div>${escapeHtml(t.pct)}% · ${pass ? '✓ Pass' : '✗ Fail'}</div>
+          <div class="history-date">${escapeHtml(dateStr)}</div>
         </div>
       </div>`;
     }).join('');
@@ -1750,9 +1915,9 @@ function renderProgress() {
 function renderBadges() {
   document.getElementById('badges-grid').innerHTML = BADGES.map(b => {
     const earned = state.badges.includes(b.id);
-    return `<div class="badge-card ${earned ? 'earned' : ''}" title="${b.desc}">
-      <div class="badge-icon">${b.icon}</div>
-      <div class="badge-name">${b.name}</div>
+    return `<div class="badge-card ${earned ? 'earned' : ''}" title="${escapeHtml(b.desc)}">
+      <div class="badge-icon">${escapeHtml(b.icon)}</div>
+      <div class="badge-name">${escapeHtml(b.name)}</div>
     </div>`;
   }).join('');
 }
@@ -1791,16 +1956,25 @@ function checkBadges() {
 
 // ===== RESET =====
 
+let modalPrevFocus = null;
+
 function confirmReset() {
+  modalPrevFocus = document.activeElement;
   document.getElementById('reset-modal').classList.add('open');
+  // Focus cancel button for safety
+  setTimeout(() => {
+    const cancelBtn = document.getElementById('reset-cancel-btn');
+    if (cancelBtn) cancelBtn.focus();
+  }, 100);
 }
 
 function closeModal(id) {
   document.getElementById(id).classList.remove('open');
+  if (modalPrevFocus) { modalPrevFocus.focus(); modalPrevFocus = null; }
 }
 
 function doReset() {
-  state = { cards: {}, tests: [], streak: 0, lastStudyDay: null, badges: [], theme: state.theme, selectedPool: state.selectedPool };
+  state = { ...createDefaultState(), theme: state.theme, selectedPool: state.selectedPool };
   saveState();
   closeModal('reset-modal');
   renderProgress();
@@ -1856,7 +2030,7 @@ async function loadPool(pool) {
     loadingEl.innerHTML = `<div style="text-align:center;padding:24px;">
       <div style="font-size:48px;margin-bottom:16px;">⚠️</div>
       <div style="font-weight:700;margin-bottom:8px;">Failed to load question pool</div>
-      <div style="font-size:14px;color:var(--text2);margin-bottom:16px;">${err.message}</div>
+      <div style="font-size:14px;color:var(--text2);margin-bottom:16px;">${escapeHtml(err.message)}</div>
       <button onclick="location.reload()" style="padding:10px 20px;background:var(--accent);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:16px;">Retry</button>
     </div>`;
     return false;
@@ -1892,7 +2066,7 @@ function updatePoolBanner() {
   select.innerHTML = POOLS.map(p => {
     const isActive = today >= p.effective && today <= p.expires;
     return `<option value="${p.id}" ${ACTIVE_POOL?.id === p.id ? 'selected' : ''}>
-      ${p.id}${isActive ? ' ✓' : ''}
+      ${escapeHtml(p.id)}${isActive ? ' ✓' : ''}
     </option>`;
   }).join('');
 
@@ -1918,6 +2092,18 @@ async function initApp() {
   renderSections();
   updatePoolBanner();
 }
+
+// ===== KEYBOARD HANDLERS =====
+
+document.addEventListener('keydown', (e) => {
+  // Close modal on Escape
+  if (e.key === 'Escape') {
+    const modal = document.getElementById('reset-modal');
+    if (modal && modal.classList.contains('open')) {
+      closeModal('reset-modal');
+    }
+  }
+});
 
 // ===== INIT =====
 
