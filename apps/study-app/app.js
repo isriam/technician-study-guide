@@ -248,6 +248,9 @@ function showPage(page, skipMenu) {
   if (page === 'schematic' && !skipMenu) showSchematicMenu();
   if (page === 'test' && !skipMenu) showTestStart();
 
+  // Update formula FAB visibility
+  updateFormulaFab();
+
   // Announce page change to screen readers
   announce(page.charAt(0).toUpperCase() + page.slice(1) + ' page');
   window.scrollTo(0, 0);
@@ -497,6 +500,24 @@ function loadCard(idx) {
   document.getElementById('fc-qid').textContent = q.id;
   document.getElementById('fc-question').textContent = q.question;
 
+  // Remove old figure container if any
+  const oldFig = document.getElementById('fc-figure-container');
+  if (oldFig) oldFig.remove();
+
+  // Show figure if question references one (works in all flashcard modes including weak areas)
+  const figHtml = renderFcFigure(q.question);
+  if (figHtml) {
+    document.getElementById('fc-question').insertAdjacentHTML('afterend', figHtml);
+  }
+
+  // Show section label for weak areas mode
+  if (fcSection === 'weak_areas') {
+    const sub = q.id.substring(0, 2);
+    const sectionName = SUBELEMENT_NAMES[sub] || sub;
+    const remaining = getWeakQuestions().length;
+    document.getElementById('fc-section-label').textContent = '🎯 Weak Areas · ' + sectionName + ' (' + remaining + ' remaining)';
+  }
+
   document.getElementById('fc-options').innerHTML =
     q.answers.map((a, i) =>
       `<div class="fc-option" id="fc-opt-${i}" data-action="select-flashcard-answer" data-answer-index="${i}" data-keyboard-activate="true" role="button" tabindex="0">
@@ -605,13 +626,17 @@ function markCard(correct, { advance = true } = {}) {
 
   if (correct) {
     c.correct = (c.correct || 0) + 1;
+    c.weakStreak = (c.weakStreak || 0) + 1;
     fcSessionCorrect++;
     // Mastered = got right 3+ times and error rate < 20%
     const total = (c.correct || 0) + (c.wrong || 0);
     if (c.correct >= 3 && (c.wrong || 0) / total < 0.2) c.mastered = true;
+    // Graduate from weak areas if weakStreak >= 3
+    if ((c.weakStreak || 0) >= 3) c.mastered = true;
   } else {
     c.wrong = (c.wrong || 0) + 1;
     c.mastered = false;
+    c.weakStreak = 0;
     fcSessionWrong++;
   }
   saveState();
@@ -957,6 +982,7 @@ function showTestStart() {
   document.getElementById('test-start').style.display = 'block';
   document.getElementById('test-active').style.display = 'none';
   document.getElementById('test-results').style.display = 'none';
+  updateFormulaFab();
   if (testTimer) { clearInterval(testTimer); testTimer = null; }
 }
 
@@ -997,6 +1023,7 @@ function startTest() {
 
   renderTestQuestion();
   startTestTimer();
+  updateFormulaFab(); // Hide FAB during test
 
   recordStudyDay();
   checkBadge('first_test');
@@ -1158,6 +1185,7 @@ function submitTest() {
 function showTestResults(correct, pct, pass, wrongQids) {
   document.getElementById('test-active').style.display = 'none';
   document.getElementById('test-results').style.display = 'block';
+  updateFormulaFab(); // Show FAB again after test ends
 
   document.getElementById('score-emoji').textContent = pass ? (pct === 100 ? '💯' : '🏆') : '📖';
   document.getElementById('score-num').textContent = `${correct}/35`;
@@ -1444,6 +1472,7 @@ async function initApp() {
   renderHome();
   renderSections();
   updatePoolBanner();
+  updateFormulaFab();
 }
 
 function handleAction(actionEl) {
@@ -1550,6 +1579,12 @@ function handleAction(actionEl) {
     case 'reload-page':
       window.location.reload();
       return;
+    case 'start-weak-areas':
+      startWeakAreas();
+      return;
+    case 'open-formula-modal':
+      openModal('formula-modal');
+      return;
     default:
       return;
   }
@@ -1573,6 +1608,11 @@ function handleDocumentKeydown(event) {
       closeSchZoom();
       return;
     }
+    const formulaModal = document.getElementById('formula-modal');
+    if (formulaModal?.classList.contains('open')) {
+      closeModal('formula-modal');
+      return;
+    }
     const modal = document.getElementById('reset-modal');
     if (modal?.classList.contains('open')) {
       closeModal('reset-modal');
@@ -1589,12 +1629,99 @@ function handleDocumentKeydown(event) {
 
 function bindModalInteractions() {
   const modal = document.getElementById('reset-modal');
-  if (!modal) return;
-  modal.addEventListener('click', (event) => {
-    if (event.target === modal) {
-      closeModal('reset-modal');
-    }
+  if (modal) {
+    modal.addEventListener('click', (event) => {
+      if (event.target === modal) closeModal('reset-modal');
+    });
+  }
+  const formulaModal = document.getElementById('formula-modal');
+  if (formulaModal) {
+    formulaModal.addEventListener('click', (event) => {
+      if (event.target === formulaModal) closeModal('formula-modal');
+    });
+  }
+}
+
+// ===== FORMULA FAB VISIBILITY =====
+
+function updateFormulaFab() {
+  const fab = document.getElementById('formula-fab');
+  if (!fab) return;
+  const testActive = document.getElementById('test-active');
+  if (currentPage === 'test' && testActive && testActive.style.display !== 'none') {
+    fab.classList.add('hidden');
+  } else {
+    fab.classList.remove('hidden');
+  }
+}
+
+function openModal(id) {
+  const modal = document.getElementById(id);
+  if (modal) modal.classList.add('open');
+}
+
+// ===== WEAK AREAS MODE =====
+
+function getWeakQuestions() {
+  return QUESTION_POOL.filter(q => {
+    const c = state.cards[q.id];
+    if (!c) return false;
+    if (!c.seen) return false;
+    if ((c.wrong || 0) === 0) return false;
+    if (c.mastered) return false;
+    if ((c.weakStreak || 0) >= 3) return false;
+    return true;
   });
+}
+
+function startWeakAreas() {
+  const weakQs = getWeakQuestions();
+  if (weakQs.length === 0) {
+    showPage('flashcard', true);
+    document.getElementById('fc-mode-select').style.display = 'none';
+    document.getElementById('fc-session').style.display = 'none';
+    document.getElementById('fc-done').style.display = 'flex';
+    document.getElementById('fc-done').style.flexDirection = 'column';
+    document.getElementById('fc-done').style.gap = '12px';
+    document.getElementById('fc-done-stats').innerHTML =
+      `<div style="text-align:center;padding:20px 0">
+        <div style="font-size:48px;margin-bottom:12px">🎯</div>
+        <div class="page-title">No Weak Areas!</div>
+        <div class="page-sub mt-2">You're crushing it! All questions mastered.</div>
+      </div>`;
+    return;
+  }
+
+  const shuffled = shuffle([...weakQs]);
+  showPage('flashcard', true);
+  fcDeck = shuffled;
+  fcIndex = 0;
+  fcSessionCorrect = 0;
+  fcSessionWrong = 0;
+  fcFlipped = false;
+  fcSection = 'weak_areas';
+
+  document.getElementById('fc-mode-select').style.display = 'none';
+  document.getElementById('fc-session').style.display = 'block';
+  document.getElementById('fc-done').style.display = 'none';
+  document.getElementById('fc-total').textContent = fcDeck.length;
+  document.getElementById('fc-section-label').textContent = '🎯 Weak Areas (' + fcDeck.length + ' remaining)';
+
+  loadCard(0);
+  recordStudyDay();
+}
+
+// ===== FIGURE RENDERING IN FLASHCARDS =====
+
+function renderFcFigure(question) {
+  const text = question.toLowerCase();
+  const match = text.match(/figure t-([123])/);
+  if (!match) return '';
+  const figKey = 'T-' + match[1];
+  const src = '../../figures/' + figKey + '.png';
+  return `<div class="fc-figure" id="fc-figure-container">
+    <img src="${src}" alt="Figure ${figKey}" class="fc-figure-img" data-action="zoom-schematic-fc" data-fig-src="${src}">
+  </div>`;
 }
 
 // ===== INIT =====

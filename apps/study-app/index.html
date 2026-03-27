@@ -641,6 +641,43 @@ body {
 .flex-between { display: flex; align-items: center; justify-content: space-between; }
 .small { font-size: 13px; }
 
+/* ===== FORMULA FAB ===== */
+#formula-fab {
+  position: fixed;
+  bottom: calc(72px + var(--safe-bottom) + 12px);
+  right: 16px;
+  z-index: 90;
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: var(--purple);
+  color: white;
+  border: none;
+  font-size: 22px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--shadow-lg);
+  cursor: pointer;
+  transition: opacity var(--transition), transform var(--transition);
+  min-height: 48px;
+}
+#formula-fab:active { transform: scale(0.92); }
+#formula-fab.hidden { display: none; }
+
+/* ===== FORMULA MODAL ===== */
+.formula-content { text-align: left; }
+.formula-section { margin-bottom: 18px; }
+.formula-section h3 { font-size: 16px; font-weight: 700; margin-bottom: 6px; color: var(--accent); }
+.formula-code {
+  background: var(--bg3); border-radius: 8px; padding: 10px 14px;
+  font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
+  font-size: 14px; line-height: 1.6; white-space: pre; overflow-x: auto;
+  margin-bottom: 6px; color: var(--text);
+}
+.formula-legend { font-size: 12px; color: var(--text2); line-height: 1.5; }
+
+/* ===== FIGURE IN FLASHCARDS ===== */
+.fc-figure { margin-top: 14px; text-align: center; }
+.fc-figure-img { max-width: 100%; border-radius: var(--radius-sm); border: 1px solid var(--border); background: #fff; cursor: zoom-in; }
+
 /* ===== ACCESSIBILITY ===== */
 .skip-link {
   position: absolute;
@@ -769,6 +806,14 @@ button:focus-visible, .nav-btn:focus-visible, .quick-btn:focus-visible,
         <div class="quick-btn-text">
           <div class="quick-btn-title">Study by Section</div>
           <div class="quick-btn-desc">T1–T0 · target weak areas</div>
+        </div>
+        <div class="quick-btn-arrow">›</div>
+      </button>
+      <button class="quick-btn" data-action="start-weak-areas">
+        <div class="quick-btn-icon">🎯</div>
+        <div class="quick-btn-text">
+          <div class="quick-btn-title">Weak Areas</div>
+          <div class="quick-btn-desc">Practice questions you've missed</div>
         </div>
         <div class="quick-btn-arrow">›</div>
       </button>
@@ -1056,6 +1101,52 @@ button:focus-visible, .nav-btn:focus-visible, .quick-btn:focus-visible,
     <span class="nav-icon" aria-hidden="true">📊</span>Progress
   </button>
 </nav>
+
+<!-- Formula FAB -->
+<button id="formula-fab" data-action="open-formula-modal" title="Formula Quick Reference" aria-label="Open formula quick reference">📐</button>
+
+<!-- Formula Modal -->
+<div class="modal-overlay" id="formula-modal" role="dialog" aria-modal="true" aria-labelledby="formula-modal-title">
+  <div class="modal">
+    <h2 class="modal-title" id="formula-modal-title">📐 Formula Quick Reference</h2>
+    <div class="modal-sub">Essential formulas for the Technician exam</div>
+    <div class="formula-content">
+      <div class="formula-section">
+        <h3>Ohm's Law</h3>
+        <div class="formula-code">E = I × R
+I = E / R
+R = E / I</div>
+        <div class="formula-legend">E = Voltage (Volts) | I = Current (Amps) | R = Resistance (Ohms)</div>
+      </div>
+      <div class="formula-section">
+        <h3>Power Law</h3>
+        <div class="formula-code">P = E × I
+E = P / I
+I = P / E</div>
+        <div class="formula-legend">P = Power (Watts)</div>
+      </div>
+      <div class="formula-section">
+        <h3>Wavelength</h3>
+        <div class="formula-code">λ (meters) = 300 / f (MHz)</div>
+      </div>
+      <div class="formula-section">
+        <h3>Antenna Length</h3>
+        <div class="formula-code">Half-wave dipole (feet) = 468 / f (MHz)
+Quarter-wave vertical (feet) = 234 / f (MHz)</div>
+      </div>
+      <div class="formula-section">
+        <h3>Decibels (memorize these)</h3>
+        <div class="formula-code">+3 dB  = double power
+-3 dB  = half power
++10 dB = 10× power
+-10 dB = 1/10 power</div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary btn-full" data-action="close-modal" data-modal-id="formula-modal">Close</button>
+    </div>
+  </div>
+</div>
 
 <!-- Reset Confirm Modal -->
 <div class="modal-overlay" id="reset-modal" role="dialog" aria-modal="true" aria-labelledby="reset-modal-title">
