@@ -335,7 +335,7 @@ function renderSections() {
     const pct = Math.round((mastered / total) * 100);
     const barColor = pct >= 80 ? 'green' : pct >= 40 ? '' : '';
 
-    return `<div class="section-card" data-action="start-section-flashcards" data-section="${se}" data-keyboard-activate="true" tabindex="0" role="button" aria-label="${SUBELEMENT_NAMES[se]}, ${total} questions, ${mastered} mastered">
+    return `<div class="section-card" data-action="start-section-study" data-section="${se}" data-keyboard-activate="true" tabindex="0" role="button" aria-label="${SUBELEMENT_NAMES[se]}, ${total} questions, ${mastered} mastered">
       <div class="section-header">
         <div class="section-title">${SUBELEMENT_NAMES[se]}</div>
         <div class="section-count">${total} Qs</div>
@@ -1539,6 +1539,24 @@ function handleAction(actionEl) {
     case 'start-section-flashcards':
       startSectionFlashcards(actionEl.dataset.section);
       return;
+    case 'start-section-study':
+      startSectionStudy(actionEl.dataset.section);
+      return;
+    case 'select-study-answer':
+      selectStudyAnswer(Number(actionEl.dataset.answerIndex));
+      return;
+    case 'study-prev':
+      studyPrev();
+      return;
+    case 'study-next':
+      studyNext();
+      return;
+    case 'study-back':
+      showPage('sections');
+      return;
+    case 'study-restart':
+      studyRestart();
+      return;
     case 'select-section':
       selectSection(actionEl);
       return;
@@ -1711,6 +1729,190 @@ function startWeakAreas() {
 
   loadCard(0);
   recordStudyDay();
+}
+
+// ===== SECTION STUDY MODE =====
+
+let studySection = '';
+let studyQuestions = [];
+let studyIndex = 0;
+let studyAnswers = {}; // index → selected answer index
+
+function startSectionStudy(se) {
+  studySection = se;
+  studyQuestions = QUESTION_POOL.filter(q => q.id.startsWith(se))
+    .sort((a, b) => a.id.localeCompare(b.id));
+  studyIndex = 0;
+  studyAnswers = {};
+
+  if (studyQuestions.length === 0) return;
+
+  // Set header info
+  const seName = SUBELEMENT_NAMES[se] || se;
+  const shortDesc = seName.split('·')[1]?.trim();
+  document.getElementById('study-section-title').textContent = shortDesc ? se + ' — ' + shortDesc : seName;
+  document.getElementById('study-section-count').textContent = studyQuestions.length + ' questions';
+
+  // Show active session, hide complete
+  document.getElementById('study-active').style.display = 'flex';
+  document.getElementById('study-complete').style.display = 'none';
+
+  showPage('section-study', true);
+  renderStudyQuestion();
+  recordStudyDay();
+}
+
+function renderStudyQuestion() {
+  const q = studyQuestions[studyIndex];
+  if (!q) return;
+
+  const total = studyQuestions.length;
+  const num = studyIndex + 1;
+  const pct = Math.round(num / total * 100);
+
+  // Progress
+  document.getElementById('study-progress-label').textContent = `Question ${num} of ${total}`;
+  document.getElementById('study-progress-bar').style.width = pct + '%';
+  const barContainer = document.getElementById('study-bar-container');
+  if (barContainer) barContainer.setAttribute('aria-valuenow', pct);
+
+  // Question
+  document.getElementById('study-qid').textContent = q.id;
+  document.getElementById('study-question').textContent = q.question;
+
+  // Remove old figure if any
+  const oldFig = document.getElementById('study-figure-container');
+  if (oldFig) oldFig.remove();
+
+  // Show figure if question references one
+  const figHtml = renderStudyFigure(q.question);
+  if (figHtml) {
+    document.getElementById('study-question').insertAdjacentHTML('afterend', figHtml);
+  }
+
+  // Answers
+  const letters = ['A', 'B', 'C', 'D'];
+  const previousAnswer = studyAnswers[studyIndex];
+  const isReviewing = previousAnswer !== undefined;
+
+  document.getElementById('study-options').innerHTML =
+    q.answers.map((a, i) => {
+      let classes = 'fc-option';
+      if (isReviewing) {
+        // Show previous answer highlighted (dimmed)
+        if (i === q.correct) {
+          classes += ' fc-correct study-reviewed';
+        } else {
+          classes += ' fc-wrong study-reviewed';
+        }
+        if (previousAnswer !== q.correct && i === previousAnswer) {
+          classes += ' fc-selected-wrong';
+        }
+      }
+      const action = isReviewing ? '' : 'data-action="select-study-answer" data-answer-index="' + i + '" data-keyboard-activate="true"';
+      const disabled = isReviewing ? 'aria-disabled="true" tabindex="-1"' : 'tabindex="0" role="button"';
+      return `<div class="${classes}" id="study-opt-${i}" ${action} ${disabled}>
+        <span class="fc-option-letter">${letters[i]}</span>
+        <span>${escapeHtml(a)}</span>
+      </div>`;
+    }).join('');
+
+  // Nav buttons
+  document.getElementById('study-prev-btn').disabled = (studyIndex === 0);
+  document.getElementById('study-next-btn').textContent =
+    (studyIndex === total - 1 && studyAnswers[studyIndex] !== undefined) ? 'Finish →' : 'Next →';
+
+  window.scrollTo(0, 0);
+}
+
+function selectStudyAnswer(selectedIndex) {
+  // Already answered this question
+  if (studyAnswers[studyIndex] !== undefined) return;
+
+  studyAnswers[studyIndex] = selectedIndex;
+  const q = studyQuestions[studyIndex];
+
+  // Highlight answers
+  q.answers.forEach((_, i) => {
+    const el = document.getElementById(`study-opt-${i}`);
+    if (!el) return;
+    el.removeAttribute('data-action');
+    el.removeAttribute('data-answer-index');
+    el.removeAttribute('data-keyboard-activate');
+    el.setAttribute('aria-disabled', 'true');
+    el.tabIndex = -1;
+    if (i === q.correct) {
+      el.classList.add('fc-correct');
+    } else {
+      el.classList.add('fc-wrong');
+    }
+    if (selectedIndex !== q.correct && i === selectedIndex) {
+      el.classList.add('fc-selected-wrong');
+    }
+  });
+
+  // Update next button text for last question
+  if (studyIndex === studyQuestions.length - 1) {
+    document.getElementById('study-next-btn').textContent = 'Finish →';
+  }
+
+  const isCorrect = selectedIndex === q.correct;
+  announce(isCorrect ? 'Correct!' : 'Incorrect. The correct answer is highlighted.');
+}
+
+function studyNext() {
+  if (studyIndex < studyQuestions.length - 1) {
+    studyIndex++;
+    renderStudyQuestion();
+  } else if (studyAnswers[studyIndex] !== undefined) {
+    // On last question and answered — show completion
+    showStudyComplete();
+  }
+}
+
+function studyPrev() {
+  if (studyIndex > 0) {
+    studyIndex--;
+    renderStudyQuestion();
+  }
+}
+
+function showStudyComplete() {
+  document.getElementById('study-active').style.display = 'none';
+  document.getElementById('study-complete').style.display = 'flex';
+  document.getElementById('study-complete').style.flexDirection = 'column';
+  document.getElementById('study-complete').style.gap = '12px';
+
+  const total = studyQuestions.length;
+  const answered = Object.keys(studyAnswers).length;
+  let correct = 0;
+  for (const [idx, ans] of Object.entries(studyAnswers)) {
+    if (studyQuestions[idx] && ans === studyQuestions[idx].correct) correct++;
+  }
+  const pct = answered > 0 ? Math.round(correct / answered * 100) : 0;
+
+  document.getElementById('study-complete-stats').innerHTML =
+    `<strong>${correct}</strong> of <strong>${answered}</strong> correct (${pct}%)<br>
+     <span style="font-size:13px;color:var(--text2);">${total - answered} skipped</span>`;
+}
+
+function studyRestart() {
+  studyIndex = 0;
+  studyAnswers = {};
+  document.getElementById('study-active').style.display = 'flex';
+  document.getElementById('study-complete').style.display = 'none';
+  renderStudyQuestion();
+}
+
+function renderStudyFigure(question) {
+  const text = question.toLowerCase();
+  const match = text.match(/figure t-([123])/);
+  if (!match) return '';
+  const figKey = 'T-' + match[1];
+  const src = '../../figures/' + figKey + '.png';
+  return `<div class="fc-figure" id="study-figure-container">
+    <img src="${src}" alt="Figure ${figKey}" class="fc-figure-img" data-action="zoom-schematic-fc" data-fig-src="${src}">
+  </div>`;
 }
 
 // ===== FIGURE RENDERING IN FLASHCARDS =====

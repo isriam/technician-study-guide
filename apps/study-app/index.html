@@ -718,6 +718,50 @@ body {
   }
 }
 
+/* ===== SECTION STUDY MODE ===== */
+.study-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+#study-active {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.study-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.study-progress-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text2);
+}
+.study-nav {
+  display: flex;
+  gap: 12px;
+  margin-top: 4px;
+}
+.study-nav .btn {
+  flex: 1;
+}
+/* Dimmed highlights for reviewed (navigated-back) questions */
+.fc-option.study-reviewed.fc-correct {
+  background: rgba(34,197,94,0.08);
+  border-color: rgba(34,197,94,0.5);
+  opacity: 0.75;
+}
+.fc-option.study-reviewed.fc-wrong {
+  opacity: 0.35;
+}
+.fc-option.study-reviewed.fc-selected-wrong {
+  background: rgba(239,68,68,0.08);
+  border-color: rgba(239,68,68,0.5);
+  opacity: 0.75;
+}
+
 /* ===== ACCESSIBILITY ===== */
 .skip-link {
   position: absolute;
@@ -867,6 +911,53 @@ button:focus-visible, .nav-btn:focus-visible, .quick-btn:focus-visible,
       <div class="page-sub" id="sections-subtitle">411 questions across 10 subelements</div>
     </div>
     <div class="section-list" id="section-list"></div>
+  </div>
+
+  <!-- SECTION STUDY PAGE -->
+  <div id="page-section-study" class="page">
+    <div class="study-header">
+      <button class="btn btn-secondary" style="padding:8px 14px;font-size:13px;min-height:44px;" data-action="study-back" aria-label="Back to sections">← Back</button>
+      <div style="flex:1;min-width:0;">
+        <div class="page-title" id="study-section-title" style="font-size:18px;">Section</div>
+        <div class="page-sub" id="study-section-count">0 questions</div>
+      </div>
+    </div>
+
+    <!-- Active study session -->
+    <div id="study-active">
+      <div class="study-progress">
+        <div class="study-progress-text">
+          <span id="study-progress-label">Question 1 of 12</span>
+        </div>
+        <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Study progress" id="study-bar-container">
+          <div class="progress-fill" id="study-progress-bar" style="width:0%"></div>
+        </div>
+      </div>
+
+      <div class="fc-card" id="study-card">
+        <div class="fc-qid" id="study-qid">T1A01</div>
+        <div class="fc-question" id="study-question">Loading…</div>
+        <div class="fc-options" id="study-options"></div>
+      </div>
+
+      <div class="study-nav" id="study-nav-bar">
+        <button class="btn btn-secondary" id="study-prev-btn" data-action="study-prev" disabled>← Prev</button>
+        <button class="btn btn-primary" id="study-next-btn" data-action="study-next">Next →</button>
+      </div>
+    </div>
+
+    <!-- Study complete state -->
+    <div id="study-complete" style="display:none">
+      <div class="card" style="text-align:center">
+        <div style="font-size:48px;margin-bottom:12px">🎉</div>
+        <div class="page-title">Section Complete!</div>
+        <div class="page-sub mt-2" id="study-complete-stats"></div>
+      </div>
+      <div class="study-nav">
+        <button class="btn btn-secondary" style="flex:1" data-action="study-back">Back to Sections</button>
+        <button class="btn btn-primary" style="flex:1" data-action="study-restart">Study Again</button>
+      </div>
+    </div>
   </div>
 
   <!-- FLASHCARD PAGE -->
