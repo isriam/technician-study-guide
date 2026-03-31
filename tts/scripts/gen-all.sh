@@ -19,7 +19,7 @@ echo ""
 echo "-> Checking TTS server..."
 CHECK=$(python3 "$KOKORO" --check 2>&1)
 if ! echo "$CHECK" | python3 -c "import sys,json; d=json.load(sys.stdin); sys.exit(0 if d.get('available') else 1)" 2>/dev/null; then
-    echo "ERROR: TTS server not reachable. Check Open Speech at 192.0.2.24:8100" >&2
+    echo "ERROR: TTS server not reachable. Check that the Open Speech TTS server is running" >&2
     echo "$CHECK" >&2
     exit 1
 fi

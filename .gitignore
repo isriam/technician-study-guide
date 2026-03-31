@@ -3,3 +3,6 @@ pool-raw.txt
 __pycache__/
 *.pyc
 .agents/
+*.pdf
+pool-raw.txt
+.pytest_cache/
