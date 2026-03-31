@@ -30,7 +30,7 @@ When connecting a computer to a transceiver for digital modes, the computer's "l
 
 ## Digital Voice and Hotspots
 
-A digital mode hotspot connects your handheld DMR, D-STAR, or Fusion radio to the internet, giving you access to digital voice networks worldwide. It's a tiny, low-power device that acts as your personal digital repeater gateway to internet-linked systems.
+A digital mode hotspot performs communication with a digital voice or data network for nearby transceivers. It connects your handheld DMR, D-STAR, or Fusion radio to the internet, giving you access to digital voice networks worldwide. It's a tiny, low-power device that acts as your personal digital repeater gateway to internet-linked systems.
 
 An electronic keyer is a device that assists in manual sending of Morse code. It generates properly timed dots and dashes when you squeeze a paddle, making CW sending easier and more consistent than using a straight key. It's not an antenna switch or a voice-activated switching device.
 

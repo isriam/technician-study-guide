@@ -6,7 +6,7 @@ Let's build a solid foundation in electrical principles, starting with the basic
 
 Here's an easy way to think about it. Voltage is the pressure, current is the flow, resistance is the restriction, and power is how fast energy gets consumed. A 100-watt light bulb uses energy twice as fast as a 50-watt bulb — that's all power means.
 
-Frequency — the number of times per second that an alternating current completes a full cycle — is measured in hertz. One hertz means one complete cycle per second. A complete cycle means the current swings positive, returns to zero, swings negative, and returns to zero again.
+Frequency — the number of times per second that an alternating current completes a full cycle — is measured in hertz. The unit of frequency is the hertz. One hertz means one complete cycle per second. A complete cycle means the current swings positive, returns to zero, swings negative, and returns to zero again.
 
 ## Conductors and Insulators
 
@@ -44,6 +44,8 @@ Capacitance is the ability to store energy in an electric field. Capacitors do t
 
 Inductance is the ability to store energy in a magnetic field, created by current flowing through a coil of wire. The unit of inductance is the henry, named after Joseph Henry. Common inductors are measured in millihenrys or microhenrys.
 
+Quick unit summary: capacitance in farads, inductance in henrys, impedance in ohms. These come up often on the exam.
+
 These two are easy to confuse, so keep them straight: capacitors store energy in electric fields, inductors store energy in magnetic fields.
 
 ## Impedance
@@ -54,7 +56,7 @@ The abbreviation RF simply stands for radio frequency — electromagnetic signal
 
 ## The Power Formula
 
-The formula for electrical power in a DC circuit is P equals E times I — power equals voltage times current. Multiply volts by amps and you get watts.
+The formula used to calculate electrical power (P) in a DC circuit is P = I x E — power equals current times voltage. Multiply amps by volts and you get watts.
 
 Here's a practical example. A voltage of 13.8 volts DC at a current of 10 amperes delivers 138 watts. That 13.8 volts is the standard voltage of a car's electrical system with the engine running, making it a very common power source for mobile ham radios. Another example: 12 volts DC at 2.5 amperes delivers 30 watts.
 

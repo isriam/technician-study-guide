@@ -32,7 +32,7 @@ There are three main causes of radio frequency interference: fundamental overloa
 
 High SWR is a common cause of low RF power output from a solid-state transceiver. Most modern rigs automatically reduce power to protect their output transistors when SWR is elevated, so a bad antenna match can drastically cut your actual radiated power.
 
-A ferrite choke is the go-to fix for distorted audio caused by RF current on the shield of a microphone cable. Adding a clip-on ferrite "choke" to the microphone cable prevents the transmitted signal from feeding back into the transmitter, eliminating distorted voice transmissions.
+A ferrite choke is the go-to fix for distorted audio caused by RF current on the shield of a microphone cable. Adding a clip-on ferrite "choke" to the microphone cable prevents the transmitted signal from feeding back into the transmitter, which can eliminate distorted voice transmissions. When the exam asks what eliminates distorted voice transmissions, the ferrite choke on the mic cable is the answer.
 
 When a non-amateur radio or TV receiver is experiencing fundamental overload from your amateur signal, the fix goes at the receiver, not the transmitter. Block the amateur signal with a filter at the antenna input of the affected receiver. This lets the desired broadcast signals through while rejecting your amateur signal.
 

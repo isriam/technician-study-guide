@@ -34,7 +34,7 @@ Amateur satellites use many different modes including SSB, FM, CW, and various d
 
 When you hear that a satellite is operating in U/V mode, the U refers to the uplink band and V refers to the downlink band. U means UHF — the 70-centimeter band at 440 megahertz — and V means VHF — the two-meter band at 146 megahertz. The letter before the slash is always the uplink, the letter after is the downlink.
 
-A LEO satellite is a satellite in low earth orbit, typically 200 to 2000 kilometers altitude. LEO satellites orbit the Earth in about 90 minutes and are only accessible for short pass windows of 5 to 15 minutes. Most amateur satellites are LEO.
+LEO means Low Earth Orbit — a satellite in low earth orbit, typically 200 to 2000 kilometers altitude, which has a period of around 100 minutes. LEO satellites are only accessible for short pass windows of 5 to 15 minutes each orbit. Most amateur satellites are LEO.
 
 Doppler shift is an observed change in signal frequency caused by relative motion between the satellite and your earth station. As the satellite approaches, its signal appears higher in frequency. As it moves away, the frequency drops — just like a passing ambulance siren. Operators must compensate for this shift to stay on frequency during a pass.
 

@@ -16,13 +16,13 @@ Polarization is defined by the orientation of the electric field of a radio wave
 
 For long-distance CW and SSB contacts on VHF and UHF, horizontal polarization is the standard. Vertical polarization is used for FM. This convention exists because horizontal antennas like Yagis tend to pick up less man-made noise and are standard for directional weak-signal work.
 
-When antennas at opposite ends of a VHF or UHF link are not using the same polarization, the received signal strength is significantly reduced — potentially by 20 decibels or more for a 90-degree mismatch. This is why both stations should use the same polarization. Cross-polarization won't invert sidebands or create echoes; it just weakens the signal.
+The effect of antenna cross-polarization over a line-of-sight VHF or UHF path is that received signal strength is reduced — potentially by 20 decibels or more for a 90-degree mismatch. This is why both stations should use the same polarization. Cross-polarization won't invert sidebands or create echoes; it just weakens the signal.
 
 An interesting exception happens with ionospheric propagation. The ionosphere rotates signal polarization through a process called Faraday rotation, making the arriving signal elliptically polarized. Because of this, either vertically or horizontally polarized antennas may be used for transmission or reception on ionospheric paths. The polarization mismatch penalty is less severe because the signal has components in both planes.
 
 ## Signal Absorption and Weather Effects
 
-Vegetation absorbs UHF and microwave signals. The water content in leaves is particularly effective at soaking up these higher frequencies. This is why signals degrade when passing through wooded areas.
+Vegetation absorbs signals, leading to poor reception of weak signals at UHF and microwave frequencies. The water content in leaves is particularly effective at soaking up these higher frequencies. This is why signals degrade when passing through wooded areas — absorption is the key word.
 
 Weather has different effects depending on frequency. At microwave frequencies, precipitation — rain, snow, and other moisture — absorbs and scatters signals, reducing range. This rain fade effect increases with frequency and becomes significant above about 10 gigahertz. However, at lower frequencies like the 10 meter and 6 meter bands, fog and rain have very little effect. The wavelengths at those frequencies are long enough that weather just doesn't matter.
 
@@ -70,6 +70,6 @@ Tropospheric ducting is responsible for allowing over-the-horizon VHF and UHF co
 
 ## Other Propagation Modes
 
-VHF signals received via auroral backscatter are distorted and vary considerably in signal strength. The aurora borealis acts as an irregular, moving reflective surface that causes significant distortion. CW is often the only usable mode because voice becomes too garbled.
+VHF signals received via auroral backscatter are distorted, with a characteristic raspy sound. The aurora borealis acts as an irregular, moving reflective surface that causes significant distortion. CW is often the only usable mode because voice becomes too garbled by the raspy distortion.
 
 The 6 meter band is best suited for communicating via meteor scatter. The ionized trails left by meteors effectively reflect signals at 50 megahertz. Higher frequencies don't scatter as well from meteor trails, and lower frequencies don't need the meteor trail to propagate.

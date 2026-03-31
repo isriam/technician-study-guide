@@ -18,13 +18,13 @@ The normal term for an FCC-issued amateur radio license is ten years. An amateur
 
 The FCC requires you to maintain a correct email address on file with them. If they can't reach you by email, it could result in revocation of your station license or suspension of your operator license. This is serious — keep your FCC email current. You don't need a physical copy of your license at the station anymore, and amateur transmitters don't require type acceptance, but that email address is mandatory.
 
-There are currently only three license classes being issued: Technician, General, and Amateur Extra. Novice, Technician Plus, and Advanced are no longer issued, though existing holders can still renew those licenses.
+The FCC currently issues new licenses for only three classes: Technician, General, and Amateur Extra. Novice, Technician Plus, and Advanced are no longer issued, though existing holders can still renew those licenses.
 
 Any licensed amateur can apply for a vanity call sign under the FCC's vanity call sign rules. The specific call signs available to you may depend on your license class, but the ability to apply is open to everyone. A valid Technician class call sign follows a two-by-three format — that's a two-letter prefix, one numeral, and a three-letter suffix, like KF1XXX. Formats like a two-by-one or one-by-two are reserved for higher classes or vanity calls.
 
 ## Definitions and Key Terms
 
-A beacon, as defined in Part 97, is an amateur station transmitting communications for the purposes of observing propagation or related experimental activities. It's not a government transmitter, not an FCC bulletin, and not a weather broadcast. Beacon means propagation observation.
+A beacon, as defined in Part 97, is an amateur station transmitting communications for the purposes of observing propagation or related experimental activities. It's not a government transmitter, not an FCC bulletin, and not a weather broadcast. Beacon means propagation observation. Automatically controlled amateur propagation beacons on HF can be found on ten meters, between 28.200 MHz and 28.300 MHz. This is the internationally recognized HF beacon sub-band — they're not scattered randomly across bands, they're concentrated in that specific 100 kHz segment.
 
 A space station is defined as an amateur station located more than 50 kilometers above Earth's surface. The key threshold is that 50-kilometer altitude — it doesn't need to be manned, and it's specifically an amateur station.
 
@@ -32,7 +32,7 @@ Broadcasting, in the FCC's definition for amateur radio, means transmissions int
 
 ## Frequency Coordination
 
-Frequency coordination for repeaters and auxiliary stations is handled by Volunteer Frequency Coordinators who are recognized by the local amateur community. These coordinators are not appointed by the FCC or the ITU — it's a grassroots, self-governance system. The coordinators are selected by amateur operators in the local or regional area whose stations are eligible to be repeater or auxiliary stations.
+Frequency coordination for repeaters and auxiliary stations is handled by a Volunteer Frequency Coordinator recognized by local amateurs. These coordinators are not appointed by the FCC, not assigned by an FCC Regional Field Office, and not designated by the ITU — it's a grassroots, self-governance system. The coordinators are selected by amateur operators in the local or regional area whose stations are eligible to be repeater or auxiliary stations.
 
 ## RACES
 
@@ -40,17 +40,17 @@ The Radio Amateur Civil Emergency Service, known as RACES, is a radio service th
 
 ## Interference Rules
 
-Willful interference to other amateur radio stations is never permitted — period. Even if another station is breaking FCC rules, you cannot intentionally jam them. The correct course of action is to report violations to the FCC. Vigilante enforcement is not allowed on the amateur bands.
+Willful or malicious interference is prohibited — flat-out, no exceptions. Even if another station is breaking FCC rules, you cannot intentionally jam them. The correct course of action is to report violations to the FCC. Vigilante enforcement is not allowed on the amateur bands.
 
 ## Frequency Privileges for Technicians
 
 Technician licensees get phone privileges on the 10 meter HF band from 28.300 to 28.500 megahertz. That's the only HF band where Technicians have phone privileges. The segments below 28.300 are for CW and data modes. To get phone privileges on 80, 40, or 15 meters, you need at least a General class license.
 
-Technicians can contact the International Space Station on VHF bands — no NASA approval needed. It's just regular amateur radio communication using their full VHF privileges.
+Any amateur with a Technician class or higher license can contact the International Space Station on VHF bands — no NASA approval or special authorization needed. It's just regular amateur radio communication using their full VHF privileges. You don't need a General or Extra to talk to the ISS.
 
 The 6 meter band runs from 50 to 54 megahertz. The frequency 52.525 megahertz is the national FM simplex calling frequency on 6 meters. The 2 meter band runs from 144 to 148 megahertz, and 146.52 megahertz is the national FM simplex calling frequency on 2 meters — one of the most important frequencies to know for the Technician exam.
 
-Technicians are authorized to use digital modes such as FT8 on the 10 meter, 6 meter, and 2 meter bands — all of these include frequencies where Technicians can operate digital.
+Technicians are authorized to use digital modes such as FT8 on the 10 meter, 6 meter, and 2 meter bands — all these choices are correct when asked which bands include Technician digital mode frequencies.
 
 The bottom 100 kilohertz of both the 6 meter band — that's 50.0 to 50.1 — and the 2 meter band — 144.0 to 144.1 — are CW only. This mirrors the HF convention of keeping CW at the bottom of each band.
 
@@ -90,9 +90,9 @@ You may sell amateur radio equipment over the air, but only on an occasional bas
 
 Transmitting information in support of broadcasting, program production, or news gathering is normally prohibited. But when it's directly related to the immediate safety of human life or protection of property and no other means is available, you can assist.
 
-An auxiliary station is a station that sends one-way transmissions between a remote repeater receiver and the main repeater transmitter — it's the link that connects a remote receive site back to the repeater. Repeaters, auxiliary stations, and space stations can automatically retransmit the signals of other amateur stations. Beacons and Earth stations cannot.
+An auxiliary station is a station sending one-way transmissions between a remote repeater receiver and the main repeater transmitter — it's the link that connects a remote receive site back to the repeater. That's the textbook example of an auxiliary station. Repeaters, auxiliary stations, and space stations can automatically retransmit the signals of other amateur stations. Beacons and Earth stations cannot.
 
-The only time you can receive compensation for operating an amateur station is when the communication is incidental to classroom instruction at an educational institution. Teachers can operate amateur radio as part of their teaching duties.
+The only time you can receive compensation for operating an amateur station is when the communication is a part of classroom instruction at an educational institution. Teachers can operate amateur radio as part of their teaching duties — but the key phrase is "a part of" the instruction, not just incidental to it.
 
 ## Station Identification
 
@@ -128,7 +128,7 @@ Any amateur who is allowed to transmit on a satellite's uplink frequency can be 
 
 Repeater operation is the classic example of automatic control — the repeater operates without a control operator being physically present at the control point. Operating a station over the internet is remote control, where you're indirectly manipulating the station controls from a distant location. Controlling model aircraft or cars by amateur radio is telecommand.
 
-Any amateur station may be remotely controlled — there's no restriction limiting remote control to just repeaters or digital stations. Remote control requires the control operator at the control point, which is the remote location; a control operator at all times; and indirect manipulation of the controls. The "remote" part means the control point is not at the transmitter's physical location.
+Any station may be remotely controlled — there's no restriction limiting remote control to just repeaters, automatically controlled stations, or digital stations. Any amateur station qualifies. Remote control requires the control operator at the control point, which is the remote location; a control operator at all times; and indirect manipulation of the controls. The "remote" part means the control point is not at the transmitter's physical location.
 
 ## Third-Party Communications and Repeaters
 

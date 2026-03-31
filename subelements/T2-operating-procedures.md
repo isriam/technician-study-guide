@@ -10,7 +10,7 @@ A repeater station simultaneously retransmits the signal of another amateur stat
 
 A linked repeater network connects multiple repeaters so that a signal received by any one repeater is transmitted by all the repeaters in the network. Think of it as a chain of repeaters all echoing each other to extend coverage across a wide area.
 
-Your VHF or UHF transceiver's "reverse" function swaps your transmit and receive frequencies, letting you listen on the repeater's input frequency instead of its output. This is useful for checking whether a station is close enough for direct simplex communication without needing the repeater.
+The purpose of the reverse function on a VHF/UHF transceiver is to listen on a repeater's input frequency. It swaps your transmit and receive frequencies so you hear what the repeater hears instead of what it outputs. This is useful for checking whether a station is close enough for direct simplex communication without needing the repeater.
 
 ## Important Frequencies
 
@@ -62,7 +62,7 @@ If your FM transmission audio is distorted on voice peaks, you're probably talki
 
 ## Frequency Conflicts
 
-When two stations transmitting on the same frequency interfere with each other, they should negotiate continued use of the frequency. Nobody "owns" a frequency in amateur radio. The general courtesy is first come, first served, but ultimately it's about cooperation and working things out.
+When two stations transmitting on the same frequency interfere with each other, the stations should negotiate continued use of the frequency. Nobody "owns" a frequency in amateur radio — no one has preemptive rights. The general courtesy is first come, first served, but ultimately it's about cooperation and working things out.
 
 ## Q Signals
 

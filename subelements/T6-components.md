@@ -32,13 +32,13 @@ The cathode lead of a semiconductor diode is often marked on the package with a 
 
 Different diode types have different forward voltage drops, and the forward voltage drop is lower in some diode types than in others. Silicon diodes drop about 0.7 volts, germanium about 0.3 volts, and Schottky diodes about 0.2 volts. This is normal behavior, not a defect, and it does reduce the voltage available to the load.
 
-A light-emitting diode, or LED, emits light when forward DC current flows through it. Reverse current would block the LED, not light it. LEDs are commonly used as visual indicators — power lights, status lights, and the like.
+A light-emitting diode, or LED, emits light when forward current flows through it. Reverse current would block the LED, not light it. An LED is commonly used as a visual indicator — power lights, status lights, and the like. When the exam asks what is commonly used as a visual indicator, LED is the answer.
 
 ## Transistors
 
 A transistor can be used as an electronic switch or amplifier. A small signal on its input controls a larger current flow — this is the basis of all digital electronics and signal amplification. A transistor is the only common component that can provide power gain, using a small input signal to control a larger output signal powered by an external supply.
 
-The term gain in amplifiers describes the increase in signal strength from input to output. Gain can refer to an increase in signal voltage, signal current, or signal power — all of these are valid ways to express amplifier gain.
+The term gain in amplifiers describes the increase in signal strength from input to output. Gain can refer to an increase in signal voltage, signal current, or signal power — all these choices are correct. Any measure of output exceeding input counts as gain.
 
 Transistors consist of three regions of semiconductor material. For bipolar junction transistors, or BJTs, the three electrodes are called the emitter, base, and collector. The arrangement is either NPN or PNP. A small current into the base controls a larger current flowing from collector to emitter.
 
