@@ -2,3 +2,4 @@
 pool-raw.txt
 __pycache__/
 *.pyc
+.agents/
