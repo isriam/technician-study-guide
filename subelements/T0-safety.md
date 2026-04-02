@@ -18,7 +18,7 @@ There are several good practices to guard against electrical shock at your stati
 
 ## Battery Safety
 
-Charging or discharging a battery too quickly creates a serious hazard — overheating and out-gassing. Rapid charging generates excessive heat, and batteries can vent hydrogen gas under pressure. In sealed batteries, this buildup can cause the battery to rupture or even explode. Both lead-acid and lithium batteries are susceptible. Always use appropriate charge rates.
+Charging or discharging an unprotected battery too quickly creates a serious hazard — overheating and out-gassing. Rapid charging generates excessive heat, and batteries can vent hydrogen gas under pressure. In sealed batteries, this buildup can cause the battery to rupture or even explode. Both lead-acid and lithium batteries are susceptible. Always use appropriate charge rates.
 
 ## Power Supply Hazards
 

@@ -61,6 +61,7 @@ Read this the morning of your exam. Key facts, formulas, and numbers that show u
 | 146.520 MHz | 2m FM national calling frequency |
 | 446.000 MHz | 70cm FM national calling frequency |
 | 52.525 MHz | 6m FM national calling frequency |
+| 28.200–28.300 MHz | HF beacon sub-band (10m) |
 | 156.800 MHz | NOT amateur — marine channel 16 (emergency) |
 
 ## Repeater Offsets
@@ -76,6 +77,7 @@ Read this the morning of your exam. Key facts, formulas, and numbers that show u
 
 | Fact | Answer |
 |------|--------|
+| Call sign format (Technician) | **Group D** — two-by-three (e.g., KF1XXX) |
 | License term | **10 years** |
 | Grace period after expiration | **2 years** (can renew but can't transmit) |
 | Minimum age | **None** |
