@@ -5,17 +5,20 @@ Simulates the real exam: 35 questions drawn from the pool with the correct
 number of questions per subelement.
 
 Usage:
-    python3 practice-test.py           # Interactive exam
-    python3 practice-test.py --quick   # Show answers immediately
-    python3 practice-test.py --stats   # Just show pool stats
+    python3 practice-test.py                       # Interactive exam (auto-selects pool)
+    python3 practice-test.py --pool 2026-2030      # Force a specific pool
+    python3 practice-test.py --quick               # Show answers immediately
+    python3 practice-test.py --stats               # Just show pool stats
 """
 
 import json
 import random
 import sys
+from datetime import date
 from pathlib import Path
 
-POOL_PATH = Path(__file__).parent.parent / "pools" / "2022-2026" / "questions.json"
+POOLS_DIR = Path(__file__).parent.parent / "pools"
+CUTOVER_DATE = date(2026, 7, 1)
 
 # Questions per subelement on the real exam
 EXAM_DISTRIBUTION = {
@@ -31,8 +34,22 @@ FIGURE_QUESTIONS = {
 }
 
 
-def load_pool():
-    with open(POOL_PATH) as f:
+def resolve_pool(pool_arg: str | None) -> tuple[str, Path]:
+    """Return (pool_name, pool_path) based on CLI arg or today's date."""
+    if pool_arg is not None:
+        valid = {"2022-2026", "2026-2030"}
+        if pool_arg not in valid:
+            print(f"Error: --pool must be one of: {', '.join(sorted(valid))}", file=sys.stderr)
+            sys.exit(1)
+        name = pool_arg
+    else:
+        name = "2026-2030" if date.today() >= CUTOVER_DATE else "2022-2026"
+
+    return name, POOLS_DIR / name / "questions.json"
+
+
+def load_pool(pool_path: Path):
+    with open(pool_path) as f:
         data = json.load(f)
     return data["questions"], data["subelements"]
 
@@ -158,16 +175,37 @@ def print_results(correct, total, wrong):
     print()
 
 
-def main():
-    questions, subelements = load_pool()
+def parse_args() -> tuple[bool, bool, str | None]:
+    """Parse CLI arguments. Returns (quick, stats, pool_name)."""
+    args = sys.argv[1:]
+    quick = "--quick" in args
+    stats = "--stats" in args
+    pool_name = None
+    if "--pool" in args:
+        idx = args.index("--pool")
+        if idx + 1 >= len(args):
+            print("Error: --pool requires a value (2022-2026 or 2026-2030)", file=sys.stderr)
+            sys.exit(1)
+        pool_name = args[idx + 1]
+    return quick, stats, pool_name
 
-    if "--stats" in sys.argv:
+
+def main():
+    quick, stats, pool_arg = parse_args()
+
+    pool_name, pool_path = resolve_pool(pool_arg)
+    source = "auto-selected by date" if pool_arg is None else "specified via --pool"
+    print(f"📡 Question pool: {pool_name} ({source})")
+
+    questions, subelements = load_pool(pool_path)
+
+    if stats:
         show_stats(questions, subelements)
         return
 
     exam = generate_exam(questions)
 
-    if "--quick" in sys.argv:
+    if quick:
         run_quick(exam)
         return
 
