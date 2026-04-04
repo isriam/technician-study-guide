@@ -756,6 +756,28 @@ body {
   align-items: center;
   gap: 12px;
 }
+.study-header-main {
+  flex: 1;
+  min-width: 0;
+}
+.study-audio-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+}
+.study-audio-wrap[hidden] {
+  display: none;
+}
+.study-audio-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text2);
+}
+.study-audio-player {
+  width: 100%;
+  min-height: 40px;
+}
 #study-active {
   display: flex;
   flex-direction: column;
@@ -959,10 +981,16 @@ button:focus-visible, .nav-btn:focus-visible, .quick-btn:focus-visible,
   <div id="page-section-study" class="page">
     <div class="study-header">
       <button class="btn btn-secondary" style="padding:8px 14px;font-size:13px;min-height:44px;" data-action="study-back" aria-label="Back to groups">← Back</button>
-      <div style="flex:1;min-width:0;">
+      <div class="study-header-main">
         <div class="page-title" id="study-section-title" style="font-size:18px;">Section</div>
         <div class="page-sub" id="study-section-count">0 questions</div>
       </div>
+      <button class="fc-tts-btn" id="study-audio-btn" data-action="toggle-study-audio" title="Play section narrative audio" aria-label="Play section narrative audio" aria-controls="study-audio-player" hidden>🔊</button>
+    </div>
+
+    <div class="card-sm study-audio-wrap" id="study-audio-wrap" hidden>
+      <div class="study-audio-label" id="study-audio-label">Section narrative audio</div>
+      <audio id="study-audio-player" class="study-audio-player" controls preload="metadata"></audio>
     </div>
 
     <!-- Active study session -->

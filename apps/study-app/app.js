@@ -46,6 +46,19 @@ const SUBELEMENT_NAMES = {
   T0: 'T0 · Electrical & RF Safety',
 };
 
+const SECTION_NARRATIVE_AUDIO = Object.freeze({
+  T0: '../../subelements/T0-safety.mp3',
+  T1: '../../subelements/T1-fcc-rules.mp3',
+  T2: '../../subelements/T2-operating-procedures.mp3',
+  T3: '../../subelements/T3-radio-waves.mp3',
+  T4: '../../subelements/T4-amateur-practices.mp3',
+  T5: '../../subelements/T5-electrical-principles.mp3',
+  T6: '../../subelements/T6-components.mp3',
+  T7: '../../subelements/T7-practical-circuits.mp3',
+  T8: '../../subelements/T8-signals-emissions.mp3',
+  T9: '../../subelements/T9-antennas-feedlines.mp3',
+});
+
 const BADGES = [
   { id: 'first_flip', icon: '🃏', name: 'First Flip', desc: 'Flip your first flashcard' },
   { id: 'first_test', icon: '📝', name: 'Test Taker', desc: 'Complete your first practice exam' },
@@ -227,6 +240,10 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () 
 let currentPage = 'home';
 
 function showPage(page, skipMenu) {
+  if (currentPage === 'section-study' && page !== 'section-study') {
+    resetStudyNarrativeAudio();
+  }
+
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => {
     b.classList.remove('active');
@@ -930,6 +947,122 @@ function closeSchZoom() {
   document.getElementById('sch-zoom-overlay').classList.remove('open');
 }
 
+// ===== SECTION NARRATIVE AUDIO =====
+
+let studyAudioLoadToken = 0;
+
+function getStudyNarrativeAudioPath(section) {
+  return SECTION_NARRATIVE_AUDIO[section] || null;
+}
+
+function updateStudyAudioButtonState() {
+  const btn = document.getElementById('study-audio-btn');
+  const audio = document.getElementById('study-audio-player');
+  if (!btn || !audio) return;
+
+  const isPlaying = !audio.paused && !audio.ended;
+  btn.classList.toggle('speaking', isPlaying);
+  const label = isPlaying ? 'Pause section narrative audio' : 'Play section narrative audio';
+  btn.setAttribute('aria-label', label);
+  btn.title = label;
+}
+
+function setStudyNarrativeAudioVisibility(visible) {
+  const btn = document.getElementById('study-audio-btn');
+  const wrap = document.getElementById('study-audio-wrap');
+  if (btn) btn.hidden = !visible;
+  if (wrap) wrap.hidden = !visible;
+}
+
+function resetStudyNarrativeAudio({ clearSource = false } = {}) {
+  const audio = document.getElementById('study-audio-player');
+  if (!audio) return;
+
+  audio.pause();
+  try {
+    audio.currentTime = 0;
+  } catch (error) {
+    // Ignore reset errors when metadata is not ready yet.
+  }
+
+  audio.onloadedmetadata = null;
+  audio.onerror = null;
+
+  if (clearSource) {
+    audio.removeAttribute('src');
+    audio.load();
+  }
+
+  updateStudyAudioButtonState();
+}
+
+function hideStudyNarrativeAudio() {
+  studyAudioLoadToken += 1;
+  resetStudyNarrativeAudio({ clearSource: true });
+  setStudyNarrativeAudioVisibility(false);
+
+  const label = document.getElementById('study-audio-label');
+  if (label) label.textContent = 'Section narrative audio';
+}
+
+function configureStudyNarrativeAudio(section) {
+  const audio = document.getElementById('study-audio-player');
+  const label = document.getElementById('study-audio-label');
+  const audioPath = getStudyNarrativeAudioPath(section);
+  if (!audio) return;
+
+  studyAudioLoadToken += 1;
+  const loadToken = studyAudioLoadToken;
+  resetStudyNarrativeAudio({ clearSource: true });
+
+  if (!audioPath) {
+    setStudyNarrativeAudioVisibility(false);
+    if (label) label.textContent = 'Section narrative audio';
+    return;
+  }
+
+  setStudyNarrativeAudioVisibility(true);
+  if (label) label.textContent = `${SUBELEMENT_NAMES[section] || section} narrative audio`;
+
+  audio.onloadedmetadata = () => {
+    if (loadToken !== studyAudioLoadToken) return;
+    updateStudyAudioButtonState();
+  };
+
+  audio.onerror = () => {
+    if (loadToken !== studyAudioLoadToken) return;
+    hideStudyNarrativeAudio();
+  };
+
+  audio.src = audioPath;
+  audio.load();
+  updateStudyAudioButtonState();
+}
+
+function toggleStudyNarrativeAudio() {
+  const wrap = document.getElementById('study-audio-wrap');
+  const audio = document.getElementById('study-audio-player');
+  if (!wrap || !audio || wrap.hidden || !audio.src) return;
+
+  if (audio.paused) {
+    if (audio.ended) audio.currentTime = 0;
+    const playPromise = audio.play();
+    if (playPromise?.catch) playPromise.catch(() => {});
+    return;
+  }
+
+  audio.pause();
+}
+
+function bindStudyNarrativeAudioEvents() {
+  const audio = document.getElementById('study-audio-player');
+  if (!audio) return;
+
+  audio.addEventListener('play', updateStudyAudioButtonState);
+  audio.addEventListener('pause', updateStudyAudioButtonState);
+  audio.addEventListener('ended', updateStudyAudioButtonState);
+}
+
 // ===== TTS =====
 
 let speaking = false;
@@ -1563,6 +1696,9 @@ function handleAction(actionEl) {
     case 'study-restart':
       studyRestart();
       return;
+    case 'toggle-study-audio':
+      toggleStudyNarrativeAudio();
+      return;
     case 'select-section':
       selectSection(actionEl);
       return;
@@ -1825,6 +1961,7 @@ function startSectionStudy(se, group) {
   const title = group ? group : (shortDesc ? se + ' — ' + shortDesc : seName);
   document.getElementById('study-section-title').textContent = title;
   document.getElementById('study-section-count').textContent = studyQuestions.length + ' questions';
+  configureStudyNarrativeAudio(se);
 
   // Show active session, hide complete
   document.getElementById('study-active').style.display = 'flex';
@@ -2007,4 +2144,5 @@ document.addEventListener('click', handleDocumentClick);
 document.addEventListener('change', handleDocumentChange);
 document.addEventListener('keydown', handleDocumentKeydown);
 bindModalInteractions();
+bindStudyNarrativeAudioEvents();
 initApp();
